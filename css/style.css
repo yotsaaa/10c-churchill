@@ -1,0 +1,546 @@
+/* ==========================================================================
+   natalie churchill — 10c f26
+   aesthetic: net-art / gothic-pastoral / early-web / eyeorb + soloshow style
+   palette: pure void black, hot pink & blush pink accents
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --bg-color: #040305;
+  --bg-box: rgba(10, 8, 12, 0.85);
+  --pink-main: #f4a6c2;
+  --pink-soft: #fbcfe8;
+  --pink-blush: #fdf2f8;
+  --pink-dim: #9e6b7f;
+  --text-main: #e8e8ed;
+  --text-dim: #8c8c96;
+  --font-serif: 'Crimson Text', 'Times New Roman', serif;
+  --font-pixel: 'Space Mono', 'MS Gothic', 'Courier New', monospace;
+  --font-sans: 'Verdana', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-color);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  cursor: crosshair;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  color: #ffffff;
+  background-color: var(--pink-main);
+}
+
+/* ==========================================================================
+   Typography & Links (eyeorb / soloshow hover effects)
+   ========================================================================== */
+a {
+  color: var(--pink-soft);
+  text-decoration: underline dashed var(--pink-main) 1px;
+  text-underline-offset: 3px;
+  transition: filter 0.25s ease, letter-spacing 0.3s ease, color 0.2s ease;
+  cursor: help;
+}
+
+a:hover {
+  color: #ffffff;
+  filter: blur(0.8px);
+  text-decoration: underline solid var(--pink-soft) 1px;
+}
+
+h1, h2, h3, h4 {
+  font-weight: normal;
+}
+
+h1 {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--pink-soft);
+  text-align: center;
+  margin: 12px 0;
+}
+
+h3 {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--pink-soft);
+  text-transform: lowercase;
+  margin-bottom: 8px;
+}
+
+small {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+hr {
+  border: none;
+  border-top: 1px dotted var(--pink-main);
+  width: 38%;
+  max-width: 280px;
+  margin: 22px auto;
+  opacity: 0.85;
+}
+
+/* Animations */
+.blink {
+  animation: blinkAnim 1s infinite steps(1);
+  color: var(--pink-main);
+}
+
+@keyframes blinkAnim {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes titleGlow {
+  0% { color: #f4a6c2; text-shadow: 0 0 6px rgba(244, 166, 194, 0.4); }
+  50% { color: #fbcfe8; text-shadow: 0 0 10px rgba(251, 207, 232, 0.6); }
+  100% { color: #f4a6c2; text-shadow: 0 0 6px rgba(244, 166, 194, 0.4); }
+}
+
+#colr {
+  animation: titleGlow 3s infinite alternate;
+}
+
+/* ==========================================================================
+   Slide-out Sidenav (like soloshow.online)
+   ========================================================================== */
+.menu-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  background: rgba(8, 6, 10, 0.9);
+  color: var(--pink-soft);
+  border: 1px dotted var(--pink-main);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.menu-toggle:hover {
+  background: var(--pink-main);
+  color: #fff;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  z-index: 150;
+}
+
+.overlay.open {
+  display: block;
+}
+
+.sidenav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 290px;
+  height: 100vh;
+  background: #08060a;
+  border-right: 1px dotted var(--pink-main);
+  z-index: 180;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  padding: 60px 24px 30px;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+}
+
+.sidenav.open {
+  transform: translateX(0);
+}
+
+.sidenav-header {
+  border-bottom: 1px dotted var(--pink-main);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  color: var(--pink-blush);
+}
+
+.sidenav nav a {
+  display: block;
+  padding: 6px 0;
+  color: var(--text-main);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(244, 166, 194, 0.2);
+}
+
+.sidenav nav a:hover {
+  color: var(--pink-soft);
+  padding-left: 6px;
+}
+
+/* ==========================================================================
+   Central Orb Portal (eyeorb.net style)
+   ========================================================================== */
+.portal-wrapper {
+  max-width: 520px;
+  margin: 40px auto 25px;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.portal-circle {
+  width: 320px;
+  height: 320px;
+  margin: 0 auto 20px;
+  border: 1px solid var(--pink-main);
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(35, 15, 25, 0.4) 0%, rgba(5, 4, 6, 0.95) 75%);
+  box-shadow: 0 0 25px rgba(244, 166, 194, 0.15), inset 0 0 30px rgba(244, 166, 194, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.portal-circle:hover {
+  border-color: var(--pink-soft);
+  box-shadow: 0 0 35px rgba(244, 166, 194, 0.3), inset 0 0 40px rgba(244, 166, 194, 0.2);
+}
+
+.portal-circle img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: contrast(105%) drop-shadow(0 0 8px rgba(244, 166, 194, 0.2));
+}
+
+.portal-circle:hover img {
+  transform: scale(1.06);
+  filter: contrast(110%) drop-shadow(0 0 15px rgba(244, 166, 194, 0.45));
+}
+
+.portal-caption {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--pink-soft);
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   Boxes: .minky, .update, .showcase (soloshow.online style)
+   ========================================================================== */
+.center-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.minky {
+  padding: 14px 18px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  width: 90%;
+  max-width: 540px;
+  border: 1px dotted var(--pink-main);
+  background-color: var(--bg-box);
+  color: #ddd;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.update {
+  border: 1px dotted var(--pink-main);
+  background-color: var(--bg-box);
+  padding: 14px 18px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  width: 90%;
+  max-width: 540px;
+  color: #ccc;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.update b {
+  color: #ffffff;
+}
+
+.update-date {
+  color: var(--pink-soft);
+  font-family: var(--font-pixel);
+}
+
+/* Artwork Detailed Card */
+.artwork-box {
+  width: 90%;
+  max-width: 540px;
+  border: 1px dotted var(--pink-main);
+  background: var(--bg-box);
+  padding: 16px;
+  margin: 10px auto;
+  text-align: center;
+}
+
+.artwork-box img {
+  max-width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  margin: 10px auto;
+  display: block;
+  border: 1px solid rgba(244, 166, 194, 0.25);
+  background: #000;
+  padding: 8px;
+}
+
+/* Blank & Locked Project Frames (Uncanny Valley + 3 Projects) */
+.portal-blank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  color: var(--pink-soft);
+  font-family: var(--font-pixel);
+}
+
+.portal-blank p {
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--pink-blush);
+}
+
+.portal-blank small {
+  color: var(--pink-dim);
+  font-size: 10px;
+}
+
+.blank-frame {
+  width: 100%;
+  height: 240px;
+  margin: 14px 0;
+  border: 1px dashed rgba(244, 166, 194, 0.45);
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.blank-frame:hover {
+  border-color: var(--pink-soft);
+  background: rgba(20, 10, 16, 0.4);
+}
+
+.blank-inner {
+  text-align: center;
+  font-family: var(--font-pixel);
+  color: var(--pink-soft);
+}
+
+.blank-inner p {
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin: 6px 0 2px;
+  color: var(--pink-blush);
+}
+
+.blank-inner small {
+  color: var(--text-dim);
+  font-size: 9.5px;
+}
+
+.locked-project {
+  opacity: 0.72;
+  border-color: rgba(244, 166, 194, 0.35);
+  margin-top: 18px;
+}
+
+.locked-frame {
+  width: 100%;
+  height: 90px;
+  margin: 10px 0;
+  border: 1px dotted rgba(244, 166, 194, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  color: var(--text-dim);
+}
+
+.artwork-meta {
+  font-family: var(--font-pixel);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px dotted rgba(244, 166, 194, 0.3);
+  padding-top: 6px;
+}
+
+/* ==========================================================================
+   Interactive Net-Art Widgets (Aroma / Mood / Lightswitch)
+   ========================================================================== */
+.net-interactive {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--text-main);
+  margin: 14px 0 6px;
+  text-align: center;
+}
+
+.net-btn {
+  background: transparent;
+  border: none;
+  color: var(--pink-main);
+  text-decoration: underline dashed 1px var(--pink-main);
+  cursor: help;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  padding: 1px 4px;
+  transition: all 0.2s ease;
+}
+
+.net-btn:hover {
+  background: var(--pink-main);
+  color: #000;
+}
+
+#mood-text {
+  color: var(--pink-blush);
+  transition: filter 0.3s ease;
+}
+
+#mood-text.animating {
+  filter: blur(4px);
+}
+
+/* ==========================================================================
+   Fixed Corner Badges (.sweety, .motto, .counter - soloshow.online style)
+   ========================================================================== */
+.motto {
+  position: fixed;
+  right: 14px;
+  bottom: 12px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--text-dim);
+  z-index: 40;
+  text-align: right;
+  pointer-events: none;
+}
+
+.motto span {
+  color: var(--pink-main);
+}
+
+.sweety {
+  position: fixed;
+  left: 14px;
+  bottom: 12px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--text-dim);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.counter-box {
+  display: inline-block;
+  border: 1px dotted var(--pink-main);
+  padding: 1px 6px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--pink-soft);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.page-footer {
+  text-align: center;
+  padding: 40px 16px 80px;
+  font-family: var(--font-pixel);
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+
+.page-footer a {
+  margin: 0 4px;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media screen and (max-width: 700px) {
+  .portal-circle {
+    width: 260px;
+    height: 260px;
+  }
+
+  .portal-circle img {
+    width: 180px;
+    height: 180px;
+  }
+
+  .minky, .update, .artwork-box {
+    width: 95%;
+  }
+
+  .sweety, .motto {
+    position: static;
+    text-align: center;
+    justify-content: center;
+    margin: 15px 0;
+  }
+
+  hr {
+    width: 60%;
+  }
+}
