@@ -38,7 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'gothic pastoral',
     'whispering pixels',
     'quiet studio static',
-    'empty canvas glow'
+    'empty canvas glow',
+    'quasi-object in blender',
+    'cube map texturing',
+    'spatial 3D exhibition'
   ];
 
   const moodSpan = document.getElementById('mood-text');
