@@ -74,10 +74,42 @@
 
     <br>
 
-    <!-- Central Glowing Orb Portal: Project 01 Showcase -->
-    <div class="portal-circle" id="portal-circle" title="click to inspect project 01">
-      <img src="Images/p1final.png" alt="project 01: uncanny valley — final artwork" />
-      <span class="portal-caption">project 01 // click to inspect ⤸</span>
+    <!-- Central Glowing Orb Portal: 3 Project Carousel -->
+    <div class="portal-circle" id="portal-circle" title="click to inspect selected project">
+      <div class="portal-slides" id="portal-slides">
+        <div class="portal-slide active" data-index="0" data-target="project-01">
+          <img src="Images/p1final.png" alt="project 01: uncanny valley — final artwork" />
+          <span class="portal-caption">project 01 // click to inspect ⤸</span>
+        </div>
+        <div class="portal-slide" data-index="1" data-target="project-02">
+          <img src="Images/p2 placeholder.png" alt="project 02: quasi-object — artifact study" />
+          <span class="portal-caption">project 02 // click to inspect ⤸</span>
+        </div>
+        <div class="portal-slide" data-index="2" data-target="project-03">
+          <img src="Images/p3 Placeholder.png" alt="project 03: unopened archive" />
+          <span class="portal-caption">project 03 // click to inspect ⤸</span>
+        </div>
+      </div>
+
+      <!-- Three Indicator Dots on the bottom of circle -->
+      <div class="portal-dots" id="portal-dots" role="tablist" aria-label="Project slide dots">
+        <button class="portal-dot active" data-index="0" aria-label="Slide 1: Project 01"></button>
+        <button class="portal-dot" data-index="1" aria-label="Slide 2: Project 02"></button>
+        <button class="portal-dot" data-index="2" aria-label="Slide 3: Project 03"></button>
+      </div>
+    </div>
+
+    <!-- Carousel Menu: switch main photo between each project -->
+    <div class="portal-menu" id="portal-menu" role="tablist" aria-label="Switch project showcase">
+      <button class="portal-menu-btn active" data-index="0" role="tab" aria-selected="true" title="Project 01: Uncanny Valley">
+        <span class="btn-dot">♥</span> 01: uncanny valley
+      </button>
+      <button class="portal-menu-btn" data-index="1" role="tab" aria-selected="false" title="Project 02: Quasi-Object">
+        <span class="btn-dot">♡</span> 02: quasi-object
+      </button>
+      <button class="portal-menu-btn" data-index="2" role="tab" aria-selected="false" title="Project 03: Slot 03">
+        <span class="btn-dot">෧</span> 03: [locked]
+      </button>
     </div>
 
     <h2>
@@ -85,7 +117,7 @@
         enter // project 01: uncanny valley
       </a>
     </h2>
-    <small>adobe illustrator & photoshop ෧ prompt: uncanny valley</small>
+    <small id="portal-subtitle">adobe illustrator & photoshop ෧ prompt: uncanny valley</small>
   </div>
 
   <hr>
@@ -145,7 +177,7 @@
         <h2>3D Artifact Study</h2>
         <model-viewer
           src="models/cube-map-demo.glb"
-          poster="Images/02.png"
+          poster="Images/p2 placeholder.png"
           alt="A 3D model of a creative artifact — cube map demo"
           shadow-intensity="1"
           camera-controls
