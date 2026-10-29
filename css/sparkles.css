@@ -1,0 +1,50 @@
+/* ==========================================================================
+   ascii sparkle field — little glyphs that slowly fade in & out
+   sits behind all content (z-index -1), never blocks clicks
+   ========================================================================== */
+
+/* body bg is moved to <html> (same colour) so the sparkle layer can sit behind content */
+body {
+  background-color: transparent;
+}
+
+.sparkle-field {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  font-family: var(--font-pixel);
+  color: var(--pink-main);
+  opacity: 0;
+  white-space: pre;
+  user-select: none;
+  text-shadow: 0 0 6px rgba(244, 166, 194, 0.55);
+  animation-name: sparkle-breathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: opacity, transform;
+}
+
+.sparkle.soft  { color: var(--pink-soft); }
+.sparkle.white { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.5); }
+.sparkle.dim   { color: var(--pink-dim); text-shadow: none; }
+
+@keyframes sparkle-breathe {
+  0%   { opacity: 0;                   transform: translateY(0)    scale(0.85); }
+  45%  { opacity: var(--peak, 0.6);    transform: translateY(-4px) scale(1);    }
+  55%  { opacity: var(--peak, 0.6);    transform: translateY(-5px) scale(1);    }
+  100% { opacity: 0;                   transform: translateY(-9px) scale(0.9);  }
+}
+
+/* respect people who turn off motion: keep a few faint, still sparkles */
+@media (prefers-reduced-motion: reduce) {
+  .sparkle {
+    animation: none;
+    opacity: calc(var(--peak, 0.6) * 0.5);
+  }
+}
