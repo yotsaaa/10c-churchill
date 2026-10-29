@@ -70,6 +70,10 @@
         if (!el.dataset.origText) {
           el.dataset.origText = el.textContent.trim();
         }
+        // keep the real markup (links, <br>, <b>, spans) so it can be restored after scrambling
+        if (!el.dataset.origHtml) {
+          el.dataset.origHtml = el.innerHTML;
+        }
         scrambleTargets.push(el);
       });
     });
@@ -77,7 +81,9 @@
 
   function scrambleElement(el, durationMs = 800) {
     if (!el || !el.dataset.origText) return;
-    const original = el.dataset.origText;
+    // grab the current markup right before scrambling (the carousel may have changed it since load)
+    const originalHtml = el.innerHTML;
+    const original = el.textContent.trim();
     const length = original.length;
     const startTime = performance.now();
 
@@ -102,7 +108,7 @@
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
-        el.textContent = original;
+        el.innerHTML = originalHtml;
       }
     }
 
@@ -155,7 +161,6 @@
         </div>
 
         <div class="ascii-status-stream" id="ascii-logs">
-          <span class="ascii-log-item">&gt; INITIALIZING VIRTUAL CANVAS BUFFER...</span>
         </div>
 
         <div class="ascii-progress-line" id="ascii-progress">
