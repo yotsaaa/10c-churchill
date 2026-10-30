@@ -116,9 +116,19 @@
 
   function initScrambleTargets() {
     scrambleTargets = [];
-    const selectors = ['h1', 'h2 a', '#statement', '.update', '.portal-caption'];
+    // all the text on the carousel (plus the old home-page bits, if a page still has them)
+    const selectors = [
+      'h1', '.ring-hint',
+      '.ring-card h3', '.ring-card .card-prompt', '.about-card .about-body p',
+      '.ring-card .artwork-meta span', '.ring-card .card-open-hint',
+      '.ring-controls .ring-btn',
+      'h2 a', '#statement', '.update', '.portal-caption'
+    ];
     selectors.forEach(sel => {
       document.querySelectorAll(sel).forEach(el => {
+        // skip hidden "opened card" extras and the patterned card backs
+        if (el.closest('.card-extra, .card-back')) return;
+        if (scrambleTargets.includes(el)) return;
         // save original text or html once
         if (!el.dataset.origText) {
           el.dataset.origText = el.textContent.trim();
@@ -172,8 +182,8 @@
     if (!state.scrambleDom) return;
     scrambleTargets.forEach((el, index) => {
       setTimeout(() => {
-        scrambleElement(el, 650);
-      }, index * 70);
+        scrambleElement(el, 800);
+      }, Math.min(index * 30, 1200));   // quick ripple across everything, done before the glitch starts
     });
   }
 
