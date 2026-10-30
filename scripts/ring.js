@@ -39,9 +39,13 @@
   const frontIndex = () => ((Math.round(-target / STEP) % N) + N) % N;
 
   // ---- render loop --------------------------------------------------------
+  // the symbol loading screen sits on top at first — hold the ring until it's gone
+  const loaderUp = () => !!document.getElementById('ascii-loader-root');
+
   function frame(now) {
+    if (loaderUp()) lastInteraction = now;
     // spin physics: free glide while flicked, then settle on nearest card
-    if (!dragging) {
+    if (!dragging && !loaderUp()) {
       if (Math.abs(velocity) > 0.05) {
         angle += velocity;
         velocity *= FRICTION;
@@ -226,9 +230,16 @@
   // ---- deep links: archive.html#project-02 opens that card -----------------
   function openFromHash() {
     const i = cards.findIndex((c) => '#' + c.id === location.hash);
-    if (i >= 0) setTimeout(() => openCard(i, { updateHash: false }), reduceMotion ? 0 : 700);
+    if (i < 0) return;
+    const go = () => loaderUp() ? setTimeout(go, 200) : openCard(i, { updateHash: false });
+    setTimeout(go, reduceMotion ? 0 : 700);
   }
-  window.addEventListener('hashchange', openFromHash);
+  window.addEventListener('hashchange', () => {
+    // menu links now point at this same page, so close the menu when one is used
+    document.getElementById('sidenav')?.classList.remove('open');
+    document.getElementById('overlay')?.classList.remove('open');
+    openFromHash();
+  });
   openFromHash();
 
   // load the 3d model(s) right away so they spin inside the floating card

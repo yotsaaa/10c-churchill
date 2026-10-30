@@ -6,7 +6,7 @@
   @}->-- natalie churchill // 10c f26 --<-{@
   web art / digital media archive : 3 semester projects
 -->
-<html lang="en">
+<html lang="en" class="ring-page">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=0.9" />
@@ -14,15 +14,16 @@
   <meta name="description" content="personal digital art and coursework archive for 10c fall 2026 by natalie churchill" />
 
   <!-- Fonts & Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=1030" />
-  <link rel="stylesheet" href="css/ascii-loader.css?v=1030" />
-  <link rel="stylesheet" href="css/sparkles.css?v=1030" />
+  <link rel="stylesheet" href="css/style.css?v=1032" />
+  <link rel="stylesheet" href="css/ascii-loader.css?v=1032" />
+  <link rel="stylesheet" href="css/sparkles.css?v=1032" />
+  <link rel="stylesheet" href="css/ring.css?v=1032" />
 
   <!-- 3D Model Viewer Component -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
   <!-- ASCII Load-in Animation Engine -->
-  <script defer src="scripts/ascii-loader.js?v=1030"></script>
+  <script defer src="scripts/ascii-loader.js?v=1032"></script>
 </head>
 
 <body>
@@ -38,14 +39,13 @@
     </div>
 
     <nav>
-      <a href="#portal">⋆*✩ central portal</a>
-      <a href="archive.html">⋆*✩ archive // page 2</a>
+      <a href="index.html">⋆*✩ central portal</a>
       <br>
       <span style="color: var(--pink-soft);">semester projects:</span><br>
-      <a href="archive.html#project-01">♡ project 01: uncanny valley <i>[online]</i></a>
+      <a href="#project-01">♡ project 01: uncanny valley <i>[online]</i></a>
       <a href="p1.html" style="padding-left: 14px; font-size: 10.5px;">↳ ⋆*✩ final pdf document ↗</a>
-      <a href="archive.html#project-02">♡ project 02: quasi-object <i>[in progress]</i></a>
-      <a href="archive.html#project-03">♡ project 03 <i>[locked]</i></a>
+      <a href="#project-02">♡ project 02: quasi-object <i>[in progress]</i></a>
+      <a href="#project-03">♡ project 03 <i>[locked]</i></a>
       <br>
       <span style="color: var(--pink-soft);">outlinks:</span><br>
       <a href="https://github.com/yotsaaa/10c-churchill" target="_blank">github repo ↗</a>
@@ -53,71 +53,101 @@
     </nav>
   </div>
 
-  <br><br>
 
-  <!-- Title & Heading (eyeorb.net style) -->
-  <div class="portal-wrapper" id="portal">
+  <!-- Header -->
+  <header class="ring-header" id="portal">
     <h1>
-      @&#125;->-- <span id="colr">natalie churchill</span> // 10c f26 <span class="blink">♥</span>
+      @&#125;->-- <a href="index.html" style="color:inherit; text-decoration:none;"><span id="colr">natalie churchill</span></a> // 10c f26 <span class="blink">♥</span>
     </h1>
+    <div class="ring-hint">drag to spin ⋆ click a project to open</div>
+  </header>
 
-    <p style="font-family: var(--font-pixel); font-size: 11px; margin-bottom: 6px;">
-      <b>latest git update:</b> <span class="update-date">october 2026</span>
-    </p>
+  <!-- 3D project ring -->
+  <main class="ring-stage" id="ringStage" aria-label="project ring — drag to spin, click a project to open">
+    <div class="ring-tilt" id="ringTilt">
 
-    <br>
-
-    <!-- Central Glowing Orb Portal: 3 Project Carousel -->
-    <div class="portal-circle" id="portal-circle" title="click to inspect selected project">
-      <div class="portal-slides" id="portal-slides">
-        <div class="portal-slide active" data-index="0" data-target="project-01">
-          <img src="Images/p1final.png" alt="project 01: uncanny valley — final artwork" />
-          <span class="portal-caption">project 01 // click to inspect ⤸</span>
+      <!-- Project 01: Uncanny Valley -->
+      <article class="ring-card artwork-box" id="project-01" data-index="0">
+        <h3>⋆*✩ project 01: "uncanny valley" ✩*⋆</h3>
+        <p class="card-prompt">prompt: uncanny valley · tools: adobe illustrator &amp; photoshop</p>
+        <div class="card-media">
+          <img src="Images/p1final.png" alt="project 01: uncanny valley — final artwork" draggable="false" />
         </div>
-        <div class="portal-slide" data-index="1" data-target="project-02">
-          <img src="Images/p2placeholders.png" alt="project 02: quasi-object — artifact study" />
-          <span class="portal-caption">project 02 // click to inspect ⤸</span>
+        <div class="card-extra"><div>
+          <div style="margin: 10px 0 12px;">
+            <a href="p1.html" class="net-btn" style="padding: 4px 12px; font-size: 11px;">⋆*✩ view project 01 final pdf ↗</a>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>medium: illustrator / photoshop</span>
+          <span>prompt: "uncanny valley"</span>
+          <span>status: complete (01 / 03)</span>
         </div>
-        <div class="portal-slide" data-index="2" data-target="project-03">
-          <img src="Images/p3 Placeholder.png" alt="project 03: unopened archive" />
-          <span class="portal-caption">project 03 // click to inspect ⤸</span>
-        </div>
-      </div>
+        <div class="card-open-hint">[ click to open ]</div>
+      </article>
 
-      <!-- Three Indicator Dots on the bottom of circle -->
-      <div class="portal-dots" id="portal-dots" role="tablist" aria-label="Project slide dots">
-        <button class="portal-dot active" data-index="0" aria-label="Slide 1: Project 01"></button>
-        <button class="portal-dot" data-index="1" aria-label="Slide 2: Project 02"></button>
-        <button class="portal-dot" data-index="2" aria-label="Slide 3: Project 03"></button>
-      </div>
+      <!-- Project 02: Quasi-Object -->
+      <article class="ring-card artwork-box has-model" id="project-02" data-index="1"
+               data-model="models/cube-map-demo.glb" data-model-alt="A 3D model of a creative artifact — cube map demo">
+        <h3>⋆*✩ project 02: "quasi-object" ✩*⋆</h3>
+        <p class="card-prompt">prompt: quasi-object · tools: blender &amp; 3d web reconstruction</p>
+        <div class="card-media">
+          <img src="Images/p2placeholders.png" alt="project 02: quasi-object — artifact study" draggable="false" />
+        </div>
+        <div class="card-model"></div>
+        <div class="card-extra"><div>
+          <div class="project-details">
+            <b>project description:</b> generate a 3d file/object based on an existing artifact (image reference).<br><br>
+            <span style="color: var(--pink-dim);">methodology:</span>
+            <ul style="margin: 4px 0 8px 18px; text-align: left; list-style: square; color: #c0c0c8;">
+              <li>select objects</li>
+              <li>document objects</li>
+              <li>reconstruct in 3D (blender)</li>
+              <li>make accessible on page as a singular object and within an environment or &lsquo;exhibition&rsquo; space</li>
+            </ul>
+            <small style="color: var(--pink-dim); display: block; margin-top: 6px;">[ 3d model placeholder online · drag to rotate / scroll to zoom ]</small>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>medium: blender / .glb 3d</span>
+          <span>prompt: "quasi-object"</span>
+          <span>status: in progress (02 / 03)</span>
+        </div>
+        <div class="card-open-hint">[ click to open · then drag the model to rotate ]</div>
+      </article>
+
+      <!-- Project 03: (Upcoming / Locked) -->
+      <article class="ring-card artwork-box locked-project" id="project-03" data-index="2">
+        <h3>⋆*✩ project 03: [unopened archive] ✩*⋆</h3>
+        <p class="card-prompt" style="color:#888;">third semester exploration / final</p>
+        <div class="card-media">
+          <img src="Images/p3 Placeholder.png" alt="project 03: unopened archive" draggable="false" />
+        </div>
+        <div class="card-extra"><div>
+          <div class="locked-frame" style="height: 70px;">
+            <small>[ slot 03 / 03 · upcoming ]</small>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>medium: tba</span>
+          <span>semester: fall 2026</span>
+          <span>status: locked (03 / 03)</span>
+        </div>
+        <div class="card-open-hint">[ click to open ]</div>
+      </article>
+
     </div>
+  </main>
 
-    <!-- Carousel Menu: switch main photo between each project -->
-    <div class="portal-menu" id="portal-menu" role="tablist" aria-label="Switch project showcase">
-      <button class="portal-menu-btn active" data-index="0" role="tab" aria-selected="true" title="Project 01: Uncanny Valley">
-        <span class="btn-dot">♥</span> 01: uncanny valley
-      </button>
-      <button class="portal-menu-btn" data-index="1" role="tab" aria-selected="false" title="Project 02: Quasi-Object">
-        <span class="btn-dot">♡</span> 02: quasi-object
-      </button>
-      <button class="portal-menu-btn" data-index="2" role="tab" aria-selected="false" title="Project 03: Slot 03">
-        <span class="btn-dot">෧</span> 03: [locked]
-      </button>
-    </div>
+  <button class="ring-btn ring-close" id="ringClose" aria-label="close project">✕ back to ring</button>
 
-    <h2>
-      <a href="archive.html" id="enter-archive">⋆*✩ enter archive // page 2 ↗</a>
-    </h2>
+  <div class="ring-controls" role="group" aria-label="project ring controls">
+    <button class="ring-btn" id="ringPrev" aria-label="previous project">‹</button>
+    <button class="ring-btn ring-dot" aria-label="open project 01">01</button>
+    <button class="ring-btn ring-dot" aria-label="open project 02">02</button>
+    <button class="ring-btn ring-dot" aria-label="open project 03">03</button>
+    <button class="ring-btn" id="ringNext" aria-label="next project">›</button>
   </div>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <p>
-      natalie churchill 🎔 10c fall 2026 ☆
-      <a href="archive.html">archive</a> ☆
-      <a href="https://github.com/yotsaaa/10c-churchill" target="_blank">repo</a>
-    </p>
-  </footer>
 
   <!-- Fixed Corner Badges (soloshow.online style) -->
   <div class="sweety">
@@ -127,10 +157,10 @@
   <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="sound off — click to play" title="toggle sound" data-no-glitch><span class="snd-icon">♫</span><span class="snd-dot">◌</span></button>
 
   <!-- Interactive Scripts -->
-  <script defer src="scripts/lightswitch.js?v=1030"></script>
-  <script defer src="scripts/sparkles.js?v=1030"></script>
-  <script defer src="scripts/glitch.js?v=1030"></script>
-  <script defer src="scripts/sound.js?v=1030"></script>
+  <script defer src="scripts/lightswitch.js?v=1032"></script>
+  <script defer src="scripts/sparkles.js?v=1032"></script>
+  <script defer src="scripts/glitch.js?v=1032"></script>
+  <script defer src="scripts/sound.js?v=1032"></script>
+  <script defer src="scripts/ring.js?v=1032"></script>
 </body>
 </html>
-
