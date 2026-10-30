@@ -746,3 +746,24 @@ model-viewer {
     width: 60%;
   }
 }
+
+/* ==========================================================================
+   sound toggle (bottom right — replaces the old visit counter)
+   ========================================================================== */
+.sound-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 12px;
+  z-index: 40;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--pink-soft);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px dotted var(--pink-main);
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.sound-toggle:hover { background: var(--pink-main); color: #0a080c; }
+.sound-toggle.playing { color: #0a080c; background: var(--pink-main); }
+.sound-toggle.playing:hover { background: var(--pink-soft); }
+.sound-toggle:focus-visible { outline: 1px solid var(--pink-soft); outline-offset: 2px; }

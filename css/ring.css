@@ -208,4 +208,6 @@ html.ring-page body {
   /* corner badges would stack on top of the header here */
   html.ring-page .sweety,
   html.ring-page .motto { display: none; }
+  /* keep the sound toggle clear of the ‹ 01 02 03 › buttons */
+  html.ring-page .sound-toggle { bottom: 58px; }
 }
