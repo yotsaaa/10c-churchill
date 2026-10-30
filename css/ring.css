@@ -491,3 +491,36 @@ html.ring-page body {
 
 /* while a card's text is scrambled, keep the one-line prompt from wrapping (stops the card changing height) */
 .ring-card.is-scrambled .card-prompt { white-space: nowrap; overflow: hidden; }
+
+/* --- ascii portrait backs (scripts/ascii-backs.js) --------------------- */
+.card-back .back-ascii {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  line-height: 7px;
+  letter-spacing: 0;
+  white-space: pre;
+  overflow: hidden;
+  color: var(--pink-soft);
+  text-shadow: 0 0 3px rgba(244, 166, 194, 0.45);
+  display: none;
+}
+.card-back.has-ascii .back-ascii { display: block; }
+.card-back.has-ascii .back-pattern,
+.card-back.has-ascii .back-emblem { display: none; }
+.card-back .back-label { display: none; }
+.card-back.has-ascii .back-label {
+  display: block;
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--pink-main);
+  background: rgba(4, 3, 5, 0.8);
+  border: 1px dotted var(--pink-main);
+  padding: 2px 8px;
+}
