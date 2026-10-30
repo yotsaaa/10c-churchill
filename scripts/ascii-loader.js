@@ -19,14 +19,25 @@
 
   // loading-screen text is shown as constantly-scrambling symbols instead of words
   const LOADER_GLYPHS = '▓▒░◇◆※∴∵◐◓◑◒⌁⌇⟡⊹✦✧';
+  // every visible character on the loading screen becomes a random symbol
+  // (spaces/line breaks are kept so the layout still holds its shape)
   function glyphify(str) {
-    return str.replace(/[A-Za-z0-9]/g, () =>
+    return str.replace(/\S/g, () =>
       LOADER_GLYPHS[Math.floor(Math.random() * LOADER_GLYPHS.length)]);
   }
+  const glyphOriginals = new WeakMap();
   function tickGlyphs() {
-    document.querySelectorAll('#ascii-loader-root [data-glyph]').forEach(el => {
-      el.textContent = glyphify(el.dataset.glyph);
+    const root = document.getElementById('ascii-loader-root');
+    if (!root) return;
+    root.querySelectorAll('[data-glyph]').forEach(el => {
+      if (!el.firstChild) el.textContent = el.dataset.glyph;
     });
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (!glyphOriginals.has(node)) glyphOriginals.set(node, node.nodeValue);
+      node.nodeValue = glyphify(glyphOriginals.get(node));
+    }
   }
   const escAttr = (t) => t.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const glyphSpan = (t, cls = '') => `<span${cls ? ` class="${cls}"` : ''} data-glyph="${escAttr(t)}"></span>`;
@@ -327,6 +338,7 @@
       if (now - lastOrbUpdate > 90) {
         orbFrameIndex = (orbFrameIndex + 1) % ORB_FRAMES.length;
         if (orbEl) orbEl.textContent = ORB_FRAMES[orbFrameIndex];
+        tickGlyphs();
         lastOrbUpdate = now;
       }
 
@@ -361,6 +373,7 @@
         const pctEl = document.getElementById('ascii-pct');
         if (barEl) barEl.textContent = barStr;
         if (pctEl) pctEl.textContent = percent;
+        tickGlyphs();
       }
 
       if (progress < 1.0) {
