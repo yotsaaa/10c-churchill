@@ -773,3 +773,12 @@ model-viewer {
 .sound-toggle.playing .snd-dot { color: var(--pink-main); text-shadow: 0 0 6px rgba(244, 166, 194, 0.7); }
 .sound-toggle:hover { border-color: var(--pink-soft); box-shadow: 0 0 10px rgba(244, 166, 194, 0.3); }
 .sound-toggle:focus-visible { outline: 1px solid var(--pink-soft); outline-offset: 2px; }
+
+/* ==========================================================================
+   custom cursor (Images/cursor.png) — used everywhere, including links,
+   buttons and the draggable ring. "11 7" is the arrow's tip, so clicks land
+   exactly where it points. falls back to the normal cursor if it can't load.
+   ========================================================================== */
+html, body, *, *::before, *::after {
+  cursor: url('../Images/cursor.png') 11 7, auto !important;
+}
