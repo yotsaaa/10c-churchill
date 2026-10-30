@@ -17,6 +17,20 @@
 
   const ASCII_CHARS = ['░', '▒', '▓', '█', '*', '+', '~', '-', '=', ':', '.', '♥', '෧', '✦', '✧', '@', '#', '%', '$', '/', '\\', '^', 'o'];
 
+  // loading-screen text is shown as constantly-scrambling symbols instead of words
+  const LOADER_GLYPHS = '▓▒░◇◆※∴∵◐◓◑◒⌁⌇⟡⊹✦✧';
+  function glyphify(str) {
+    return str.replace(/[A-Za-z0-9]/g, () =>
+      LOADER_GLYPHS[Math.floor(Math.random() * LOADER_GLYPHS.length)]);
+  }
+  function tickGlyphs() {
+    document.querySelectorAll('#ascii-loader-root [data-glyph]').forEach(el => {
+      el.textContent = glyphify(el.dataset.glyph);
+    });
+  }
+  const escAttr = (t) => t.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const glyphSpan = (t, cls = '') => `<span${cls ? ` class="${cls}"` : ''} data-glyph="${escAttr(t)}"></span>`;
+
   // Orb frames for animated shimmering ASCII sphere
   const ORB_FRAMES = [
 `      .:'""'::.      
@@ -51,11 +65,11 @@
 
   const LOG_MSGS = [
     { at: 0.05, text: 'INITIALIZING VIRTUAL CANVAS BUFFER...' },
-    { at: 0.22, text: 'PARSING REPO // DES 10C COURSE ARCHIVE (F26)... <span class="ok-badge">[OK]</span>' },
-    { at: 0.42, text: 'ASSET 01: UNCANNY VALLEY (ILLUSTRATOR / PHOTOSHOP)... <span class="ok-badge">[ONLINE]</span>' },
-    { at: 0.65, text: 'ASSET 02: QUASI-OBJECT 3D MESH (.GLB VIEWER)... <span class="ok-badge">[READY]</span>' },
+    { at: 0.22, text: 'PARSING REPO // DES 10C COURSE ARCHIVE (F26)...', badge: '[OK]' },
+    { at: 0.42, text: 'ASSET 01: UNCANNY VALLEY (ILLUSTRATOR / PHOTOSHOP)...', badge: '[ONLINE]' },
+    { at: 0.65, text: 'ASSET 02: QUASI-OBJECT 3D MESH (.GLB VIEWER)...', badge: '[READY]' },
     { at: 0.85, text: 'SYNCHRONIZING VOID AESTHETIC & PINK CHROMA...' },
-    { at: 0.98, text: 'RENDER COMPLETED. MOUNTING HIGH-RES VIEWPORT... <span class="ok-badge">[100%]</span>' }
+    { at: 0.98, text: 'RENDER COMPLETED. MOUNTING HIGH-RES VIEWPORT...', badge: '[100%]' }
   ];
 
   // Cached DOM elements for text scramble
@@ -136,15 +150,15 @@
       <div class="ascii-scanline-beam" id="ascii-beam"></div>
       <div class="ascii-terminal-frame" id="ascii-frame">
         <div class="ascii-header-strip">
-          <span>⋆*✩ NATALIE CHURCHILL // 10C F26 TERMINAL ✩*⋆</span>
-          <span>SYSTEM: <span class="live-dot">● ACTIVE</span></span>
+          <span>⋆*✩ ${glyphSpan('NATALIE CHURCHILL // 10C F26 TERMINAL')} ✩*⋆</span>
+          <span>${glyphSpan('SYSTEM:')} <span class="live-dot">● ${glyphSpan('ACTIVE')}</span></span>
         </div>
 
         <div class="ascii-canvas-wrap">
           <pre class="ascii-art-pre" id="ascii-art-display">
        /\\_/\\
-      ( o.o )   @}-&gt;-- natalie churchill // 10c f26 --&lt;-{@
-       &gt; ^ &lt;    web art / digital media archive : 3 works
+      ( o.o )   @}-&gt;-- ${glyphSpan('natalie churchill // 10c f26')} --&lt;-{@
+       &gt; ^ &lt;    ${glyphSpan('web art / digital media archive : 3 works')}
           </pre>
         </div>
 
@@ -164,16 +178,17 @@
         </div>
 
         <div class="ascii-progress-line" id="ascii-progress">
-          DECODING: [<span class="ascii-progress-bar-fill">░░░░░░░░░░░░░░░░░░░░</span>] 0%
+          ${glyphSpan('DECODING:')} [<span class="ascii-progress-bar-fill" id="ascii-bar">░░░░░░░░░░░░░░░░░░░░</span>] <span id="ascii-pct">0</span>%
         </div>
 
         <div class="ascii-skip-hint" id="ascii-skip-btn">
-          [ click anywhere or press ESC to skip ]
+          [ ${glyphSpan('click anywhere or press ESC to skip')} ]
         </div>
       </div>
     `;
 
     document.body.appendChild(loader);
+    tickGlyphs();
 
     loader.addEventListener('click', () => {
       finishAnimationEarly();
@@ -301,17 +316,24 @@
     let orbFrameIndex = 0;
     let lastOrbUpdate = 0;
     let loggedIndices = new Set();
+    let lastGlyphTick = 0;
 
     function renderFrame(now) {
       if (!state.isRunning) return;
       const elapsed = now - startTime;
-      const progress = Math.min(elapsed / state.duration, 1.0);
+      const progress = Math.max(0, Math.min(elapsed / state.duration, 1.0));
 
       // Shimmer orb
       if (now - lastOrbUpdate > 90) {
         orbFrameIndex = (orbFrameIndex + 1) % ORB_FRAMES.length;
         if (orbEl) orbEl.textContent = ORB_FRAMES[orbFrameIndex];
         lastOrbUpdate = now;
+      }
+
+      // re-scramble the symbol text
+      if (now - lastGlyphTick > 70) {
+        tickGlyphs();
+        lastGlyphTick = now;
       }
 
       // Check log lines
@@ -321,8 +343,9 @@
           if (logsEl) {
             const line = document.createElement('span');
             line.className = 'ascii-log-item';
-            line.innerHTML = `&gt; ${msg.text}`;
+            line.innerHTML = `&gt; ${glyphSpan(msg.text)}` + (msg.badge ? ` ${glyphSpan(msg.badge, 'ok-badge')}` : '');
             logsEl.appendChild(line);
+            tickGlyphs();
             logsEl.scrollTop = logsEl.scrollHeight;
           }
         }
@@ -334,7 +357,10 @@
         const filledBars = Math.floor(progress * totalBars);
         const barStr = '█'.repeat(filledBars) + '░'.repeat(totalBars - filledBars);
         const percent = Math.floor(progress * 100);
-        progressEl.innerHTML = `DECODING: [<span class="ascii-progress-bar-fill">${barStr}</span>] ${percent}%`;
+        const barEl = document.getElementById('ascii-bar');
+        const pctEl = document.getElementById('ascii-pct');
+        if (barEl) barEl.textContent = barStr;
+        if (pctEl) pctEl.textContent = percent;
       }
 
       if (progress < 1.0) {

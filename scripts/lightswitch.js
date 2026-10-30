@@ -80,19 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
       targetId: 'project-01',
       title: 'enter // project 01: uncanny valley',
       subtitle: 'adobe illustrator & photoshop ෧ prompt: uncanny valley',
-      link: '#project-01'
+      link: 'archive.html#project-01'
     },
     {
       targetId: 'project-02',
       title: 'enter // project 02: quasi-object',
       subtitle: 'blender & 3d web reconstruction ෧ prompt: quasi-object',
-      link: '#project-02'
+      link: 'archive.html#project-02'
     },
     {
       targetId: 'project-03',
       title: 'enter // project 03: [unopened archive]',
       subtitle: 'third semester exploration / final ෧ prompt: tba (locked)',
-      link: '#project-03'
+      link: 'archive.html#project-03'
     }
   ];
 
@@ -190,6 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetEl = document.getElementById(targetData.targetId);
         if (targetEl) {
           targetEl.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          // projects live on page 2 now
+          window.location.href = targetData.link;
         }
       }
     });
