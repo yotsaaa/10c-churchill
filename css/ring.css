@@ -491,6 +491,8 @@ html.ring-page body {
 
 /* while a card's text is scrambled, keep the one-line prompt from wrapping (stops the card changing height) */
 .ring-card.is-scrambled .card-prompt { white-space: nowrap; overflow: hidden; }
+/* scrambled cards hold their real height (set in ring.js); clip any symbols that spill over */
+.ring-card.is-scrambled:not(.focused) { overflow: hidden; }
 
 /* --- ascii portrait backs (scripts/ascii-backs.js) --------------------- */
 .card-back .back-ascii {

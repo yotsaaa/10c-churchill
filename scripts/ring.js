@@ -347,13 +347,47 @@
     return { nodes, total: Math.max(1, total), readable: false, revealAt: 0, done: false, lastShuffle: 0 };
   });
 
+  // ---- keep each card the same size while its text is scrambled -------------
+  // scrambled symbols wrap a little differently from real words, which made cards
+  // jitter in height. so each card's height is measured with its real text and
+  // held there while it's scrambled or unscrambling.
+  const restore = (ct) => ct.nodes.forEach(({ n, orig }) => { if (n.isConnected) n.nodeValue = orig; });
+  const lockHeight = (i, h) => { cards[i].style.height = h + 'px'; };
+  const unlockHeight = (i) => { cards[i].style.height = ''; };
+
+  // measure every scrambled card with its real text (on load + whenever the window resizes)
+  function measureLocks() {
+    cardText.forEach((ct, i) => {
+      if (ct.readable && ct.done) return;           // readable cards size themselves
+      unlockHeight(i);
+      restore(ct);
+      const h = cards[i].offsetHeight;
+      lockHeight(i, h);
+      ct.lastShuffle = 0;                            // re-scramble on the next frame
+    });
+  }
+  if (document.readyState === 'complete') measureLocks();
+  else window.addEventListener('load', measureLocks);
+  let resizeTimer = null;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(measureLocks, 150); });
+
   function updateCardText(now) {
     if (reduceMotion) return;
     const featured = loaderUp() ? -1 : (focused >= 0 ? focused : ((Math.round(-angle / STEP) % N) + N) % N);
     cardText.forEach((ct, i) => {
       if (i === featured && !ct.readable) { ct.readable = true; ct.revealAt = now; ct.done = false; }
+      if (cards[i].classList.contains('focused')) ct.lastFocused = now;
+      if (i !== featured && ct.readable) {
+        // leaving the front: measure its real height (after it finishes shrinking, if it was open)
+        ct.measureAt = now + (now - (ct.lastFocused || -1e9) < 1000 ? 950 : 0);
+        if (ct.done && ct.measureAt <= now) { lockHeight(i, cards[i].offsetHeight); ct.measureAt = 0; }
+        ct.readable = false; ct.lastShuffle = 0;
+      }
+      if (!ct.readable && ct.measureAt && now >= ct.measureAt) {
+        ct.measureAt = 0;
+        unlockHeight(i); restore(ct); lockHeight(i, cards[i].offsetHeight); ct.lastShuffle = 0;
+      }
       cards[i].classList.toggle('is-scrambled', !ct.readable || !ct.done);
-      if (i !== featured && ct.readable) { ct.readable = false; ct.lastShuffle = 0; }
 
       if (ct.readable) {
         if (ct.done) return;
@@ -364,7 +398,7 @@
           const k = Math.max(0, Math.min(orig.length, Math.floor(upto - start)));
           n.nodeValue = k >= orig.length ? orig : orig.slice(0, k) + scramble(orig.slice(k));
         });
-        if (p >= 1) ct.done = true;
+        if (p >= 1) { ct.done = true; unlockHeight(i); cards[i].classList.remove('is-scrambled'); }
       } else if (now - ct.lastShuffle > RESCRAMBLE_MS) {
         ct.lastShuffle = now;
         ct.nodes.forEach(({ n, orig }) => { if (n.isConnected) n.nodeValue = scramble(orig); });
