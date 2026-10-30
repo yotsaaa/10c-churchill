@@ -53,7 +53,7 @@
   // idle "screensaver": after IDLE_MS with no mouse / key / touch activity, every card
   // turns round to its ascii back; any activity turns them back to the front.
   // (not while a card is open or a video is playing with sound — someone's watching)
-  const IDLE_MS = 60000;
+  const IDLE_MS = 20000;
   let lastActivity = performance.now(), idleOn = false, wokeAt = 0;
   function onActivity() {
     lastActivity = performance.now();
