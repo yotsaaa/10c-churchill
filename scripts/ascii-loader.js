@@ -35,6 +35,7 @@
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
+      if (node.parentElement && node.parentElement.id === 'ascii-orb-display') continue;
       if (!glyphOriginals.has(node)) glyphOriginals.set(node, node.nodeValue);
       node.nodeValue = glyphify(glyphOriginals.get(node));
     }
@@ -42,7 +43,34 @@
   const escAttr = (t) => t.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const glyphSpan = (t, cls = '') => `<span${cls ? ` class="${cls}"` : ''} data-glyph="${escAttr(t)}"></span>`;
 
-  // Orb frames for animated shimmering ASCII sphere
+  // ---- spinning ascii spiral (replaces the old orb) -------------------------
+  // only plain, same-width characters so the rows always line up
+  const SPIRAL = { cols: 37, rows: 15, arms: 3, wind: 7.5, speed: 2.2 };
+  const SPIRAL_TIERS = ['@#%&$', '*+=x%o', ':;~-+*', '.·\'`,°'];
+  function spiralFrame(t) {
+    const { cols, rows, arms, wind, speed } = SPIRAL;
+    const cx = (cols - 1) / 2, cy = (rows - 1) / 2;
+    let out = '';
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const dx = (x - cx) / cx, dy = (y - cy) / cy;
+        const r = Math.hypot(dx, dy);
+        if (r > 1) { out += ' '; continue; }
+        const th = Math.atan2(dy, dx);
+        const arm = (Math.cos(th * arms - r * wind + t * speed) + 1) / 2; // 1 = middle of an arm
+        let v = arm * (1 - r * 0.5);
+        if (r < 0.14) v = 1;                                                 // bright core
+        if (v < 0.5 + Math.random() * 0.12) { out += ' '; continue; }
+        const tier = v > 0.93 ? 0 : v > 0.78 ? 1 : v > 0.64 ? 2 : 3;
+        const set = SPIRAL_TIERS[tier];
+        out += set[Math.floor(Math.random() * set.length)];
+      }
+      out += '\n';
+    }
+    return out;
+  }
+
+  // Orb frames for animated shimmering ASCII sphere (no longer shown)
   const ORB_FRAMES = [
 `      .:'""'::.      
    .:' ░▒▓███▓▒░ ':.   
@@ -315,6 +343,7 @@
     const orbEl = document.getElementById('ascii-orb-display');
     const logsEl = document.getElementById('ascii-logs');
     const progressEl = document.getElementById('ascii-progress');
+    if (orbEl) orbEl.textContent = spiralFrame(0);
 
     // Reset styles
     loader.style.opacity = '1';
@@ -335,9 +364,8 @@
       const progress = Math.max(0, Math.min(elapsed / state.duration, 1.0));
 
       // Shimmer orb
-      if (now - lastOrbUpdate > 90) {
-        orbFrameIndex = (orbFrameIndex + 1) % ORB_FRAMES.length;
-        if (orbEl) orbEl.textContent = ORB_FRAMES[orbFrameIndex];
+      if (now - lastOrbUpdate > 70) {
+        if (orbEl) orbEl.textContent = spiralFrame((now - startTime) / 1000);
         tickGlyphs();
         lastOrbUpdate = now;
       }

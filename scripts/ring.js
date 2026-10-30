@@ -37,6 +37,7 @@
 
   // wider ring on big screens so the side cards peek out more
   // open / close animation speed (per frame, 0–1: smaller = slower & floatier)
+  const DEPTH_BLUR = 4;          // px of blur on the card furthest back (0 = no blur)
   const OPEN_EASE = 0.12;
   const CLOSE_EASE = 0.06;
   const openMix = cards.map(() => 0);
@@ -140,7 +141,12 @@
       card.style.transform =
         `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg)`;
       card.style.opacity = opacity.toFixed(3);
-      card.style.filter = bright < 0.99 ? `brightness(${bright.toFixed(3)})` : '';
+      // cards further back are softly out of focus, so through the glass they look blurred
+      const blurPx = depth * DEPTH_BLUR * (1 - m);
+      const f = [];
+      if (bright < 0.99) f.push(`brightness(${bright.toFixed(3)})`);
+      if (blurPx > 0.15) f.push(`blur(${blurPx.toFixed(2)}px)`);
+      card.style.filter = f.join(' ');
       card.style.zIndex = String(Math.round(1000 + z));
 
       const back = Math.cos((rotY * Math.PI) / 180) < 0;
