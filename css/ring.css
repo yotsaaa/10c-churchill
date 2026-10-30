@@ -461,3 +461,5 @@ html.ring-page body {
 .ring-card.focused .tease-screen.has-video .tease-center,
 .ring-card.focused .tease-screen.has-video .tease-bottom { display: none; }
 .ring-card:not(.focused) .tease-video { pointer-events: none; }
+
+.tease-tc { margin-left: auto; }   /* timecode stays in the top-right corner */
