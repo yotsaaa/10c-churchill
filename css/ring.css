@@ -503,7 +503,7 @@ html.ring-page body {
   white-space: pre;
   overflow: hidden;
   color: var(--pink-soft);
-  text-shadow: 0 0 3px rgba(244, 166, 194, 0.45);
+  -webkit-text-fill-color: var(--pink-soft);   /* always draw these pink, whatever is around them */
   display: none;
 }
 .card-back.has-ascii .back-ascii { display: block; }
@@ -548,3 +548,7 @@ html.ring-page body {
 
 /* ꩜ card-backs toggle — sits just left of the ♫ sound toggle */
 .sound-toggle.backs-toggle { right: 64px; }
+
+/* while every card is turned round (꩜), skip the frosted blur — thousands of tiny
+   ascii characters behind blurred glass is a lot for some browsers to draw */
+.backs-on .ring-card.artwork-box { -webkit-backdrop-filter: none; backdrop-filter: none; }

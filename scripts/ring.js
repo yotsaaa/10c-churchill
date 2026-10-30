@@ -173,6 +173,7 @@
   const backsBtn = document.getElementById('backs-toggle');
   function setBacks(on) {
     backsOn = on;
+    document.documentElement.classList.toggle('backs-on', on);
     if (on && focused >= 0) closeCard();
     if (backsBtn) {
       backsBtn.classList.toggle('playing', on);
@@ -286,7 +287,8 @@
       const card = hit && hit.closest('.ring-card');
       target = Math.round(angle / STEP) * STEP;
       const idx = card && !hit.closest('a, button') ? cards.indexOf(card) : -1;
-      if (idx >= 0 && backsOn) { setBacks(false); if (idx !== frontIndex()) spinTo(idx); return; }
+      // while ꩜ is on, cards stay turned round: clicking one just spins it to the front
+      if (idx >= 0 && backsOn) { if (idx !== frontIndex()) spinTo(idx); return; }
       if (idx >= 0) {
         // front card opens; any other card spins round to the front first
         if (idx === frontIndex()) openCard(idx);
