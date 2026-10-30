@@ -751,19 +751,25 @@ model-viewer {
    sound toggle (bottom right — replaces the old visit counter)
    ========================================================================== */
 .sound-toggle {
-  position: fixed;
+  position: fixed !important;
   right: 14px;
+  left: auto;
   bottom: 12px;
   z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
   font-family: var(--font-pixel);
-  font-size: 10px;
+  font-size: 12px;
+  line-height: 1;
   color: var(--pink-soft);
   background: rgba(0, 0, 0, 0.8);
   border: 1px dotted var(--pink-main);
-  padding: 2px 8px;
+  padding: 4px 8px;
   cursor: pointer;
 }
-.sound-toggle:hover { background: var(--pink-main); color: #0a080c; }
-.sound-toggle.playing { color: #0a080c; background: var(--pink-main); }
-.sound-toggle.playing:hover { background: var(--pink-soft); }
+.sound-toggle .snd-dot { color: var(--pink-dim); font-size: 11px; display: inline-block; width: 1em; text-align: center; }
+.sound-toggle.playing .snd-dot { color: var(--pink-main); text-shadow: 0 0 6px rgba(244, 166, 194, 0.7); }
+.sound-toggle:hover { border-color: var(--pink-soft); box-shadow: 0 0 10px rgba(244, 166, 194, 0.3); }
 .sound-toggle:focus-visible { outline: 1px solid var(--pink-soft); outline-offset: 2px; }

@@ -28,7 +28,8 @@
   let fadeTimer = null;
 
   function render() {
-    btn.textContent = on ? '♫ sound: on' : '♪ sound: off';
+    btn.innerHTML = '<span class="snd-icon">♫</span><span class="snd-dot">' + (on ? '●' : '◌') + '</span>';
+    btn.setAttribute('aria-label', on ? 'sound on — click to mute' : 'sound off — click to play');
     btn.setAttribute('aria-pressed', String(on));
     btn.classList.toggle('playing', on);
   }
