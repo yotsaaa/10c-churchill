@@ -68,6 +68,7 @@
 
   function turnOff() {
     on = false; render();
+    pausedForVideo = false;
     store.set(KEY_ON, '0');
     fadeTo(0, 400, () => audio.pause());
   }
@@ -81,6 +82,30 @@
     c.volume = CLICK_VOLUME;
     c.play().catch(() => {});
   };
+
+  // ---- pause the music while a video plays with sound -----------------------
+  // (silent looping previews, like project 03's floating card, don't count)
+  let pausedForVideo = false;
+  const loudVideoPlaying = () => Array.from(document.querySelectorAll('video'))
+    .some((v) => !v.paused && !v.ended && !v.muted && v.volume > 0);
+
+  function checkVideos() {
+    if (!on) return;
+    if (loudVideoPlaying()) {
+      if (!pausedForVideo && !audio.paused) {
+        pausedForVideo = true;
+        fadeTo(0, 350, () => audio.pause());
+      }
+    } else if (pausedForVideo) {
+      pausedForVideo = false;
+      play().catch(() => {});
+    }
+  }
+  // media events don't bubble, so listen in the capture phase for every video
+  ['play', 'pause', 'ended', 'volumechange', 'emptied'].forEach((type) =>
+    document.addEventListener(type, (e) => {
+      if (e.target instanceof HTMLVideoElement) setTimeout(checkVideos, 0);
+    }, true));
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
