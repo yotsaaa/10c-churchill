@@ -315,5 +315,63 @@
   // load the 3d model(s) right away so they spin inside the floating card
   cards.forEach((c) => { if (c.dataset.model) loadModel(c); });
 
+  // ---- scrambled text on cards that aren't featured ------------------------
+  // every card except the one in front shows its words as shifting symbols;
+  // when a card comes to the front (or is opened) its text unscrambles top to bottom.
+  // each letter becomes a symbol of about the same width, so lines don't re-wrap
+  // and the cards keep their size while scrambled
+  const NARROW_IN = "ijlt.,:;'!|fr()[]1I", NARROW = ".:;·'";
+  const WIDE_IN = 'mwMW@%&', WIDE = '@#%&';
+  const MID = '*+=~xo°';
+  const REVEAL_MS = 750;        // how long the unscramble takes
+  const RESCRAMBLE_MS = 160;    // how often the scrambled text shifts
+  const pickFrom = (s) => s[Math.floor(Math.random() * s.length)];
+  const scramble = (str) => str.replace(/\S/g, (ch) =>
+    NARROW_IN.includes(ch) ? pickFrom(NARROW) : WIDE_IN.includes(ch) ? pickFrom(WIDE) : pickFrom(MID));
+
+  const cardText = cards.map((card) => {
+    const nodes = [];
+    const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT, {
+      acceptNode(n) {
+        if (!/\S/.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
+        // leave out: patterned backs, opened-card extras, the p03 screen, live-updating bits
+        if (n.parentElement.closest('.card-back, .card-extra, .tease-screen, model-viewer, video')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    let n, total = 0;
+    while ((n = walker.nextNode())) {
+      nodes.push({ n, orig: n.nodeValue, start: total });
+      total += n.nodeValue.length;
+    }
+    return { nodes, total: Math.max(1, total), readable: false, revealAt: 0, done: false, lastShuffle: 0 };
+  });
+
+  function updateCardText(now) {
+    if (reduceMotion) return;
+    const featured = loaderUp() ? -1 : (focused >= 0 ? focused : ((Math.round(-angle / STEP) % N) + N) % N);
+    cardText.forEach((ct, i) => {
+      if (i === featured && !ct.readable) { ct.readable = true; ct.revealAt = now; ct.done = false; }
+      cards[i].classList.toggle('is-scrambled', !ct.readable || !ct.done);
+      if (i !== featured && ct.readable) { ct.readable = false; ct.lastShuffle = 0; }
+
+      if (ct.readable) {
+        if (ct.done) return;
+        const p = Math.min(1, (now - ct.revealAt) / REVEAL_MS);
+        const upto = p * ct.total;                       // characters revealed so far, in reading order
+        ct.nodes.forEach(({ n, orig, start }) => {
+          if (!n.isConnected) return;
+          const k = Math.max(0, Math.min(orig.length, Math.floor(upto - start)));
+          n.nodeValue = k >= orig.length ? orig : orig.slice(0, k) + scramble(orig.slice(k));
+        });
+        if (p >= 1) ct.done = true;
+      } else if (now - ct.lastShuffle > RESCRAMBLE_MS) {
+        ct.lastShuffle = now;
+        ct.nodes.forEach(({ n, orig }) => { if (n.isConnected) n.nodeValue = scramble(orig); });
+      }
+    });
+  }
+  (function textLoop(now) { updateCardText(now); requestAnimationFrame(textLoop); })(performance.now());
+
   requestAnimationFrame(frame);
 })();

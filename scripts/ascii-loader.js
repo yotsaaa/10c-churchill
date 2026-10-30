@@ -119,9 +119,7 @@
     // all the text on the carousel (plus the old home-page bits, if a page still has them)
     const selectors = [
       'h1', '.ring-hint',
-      '.ring-card h3', '.ring-card .card-prompt', '.about-card .about-body p',
-      '.ring-card .artwork-meta span', '.ring-card .card-open-hint',
-      '.ring-controls .ring-btn',
+      '.ring-controls .ring-btn',          // (the cards scramble/unscramble themselves — see ring.js)
       'h2 a', '#statement', '.update', '.portal-caption'
     ];
     selectors.forEach(sel => {

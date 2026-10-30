@@ -3,3 +3,6 @@
 Thumbs.db
 # original full-size files (too big for github) — the site uses the small copies in Images/extra/
 Additional Works/
+# full-size demo screenshots — the site uses the smaller copies in Images/Demos/web/
+Images/Demos/*.png
+Images/Demos/*.PNG

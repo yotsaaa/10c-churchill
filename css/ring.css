@@ -488,3 +488,6 @@ html.ring-page body {
 .about-card .about-body { background: rgba(0, 0, 0, 0.2); }
 .ring-card .project-details { background: rgba(0, 0, 0, 0.22); }
 .ring-card .locked-frame { background: rgba(0, 0, 0, 0.15); }
+
+/* while a card's text is scrambled, keep the one-line prompt from wrapping (stops the card changing height) */
+.ring-card.is-scrambled .card-prompt { white-space: nowrap; overflow: hidden; }

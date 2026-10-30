@@ -1,12 +1,11 @@
 /**
  * natalie churchill — 10c f26
- * additional work card: once the card is open, click a thumbnail to show it
+ * gallery cards (additional work, in-class demos): once a card is open, click a thumbnail to show it
  * big. works with images (data-type="image") and videos (data-type="video").
  */
 
-(function () {
-  const card = document.getElementById('extra');
-  if (!card) return;
+// set up every gallery card on the page (additional work, in-class demos, …)
+document.querySelectorAll('.extra-card').forEach(function (card) {
   const items = Array.from(card.querySelectorAll('.extra-item'));
   const viewer = card.querySelector('.extra-viewer');
   const img = viewer && viewer.querySelector('img');
@@ -45,4 +44,4 @@
   }).observe(card, { attributes: true, attributeFilter: ['class'] });
 
   show(items[0]);
-})();
+});
