@@ -37,7 +37,8 @@
 
   // wider ring on big screens so the side cards peek out more
   // open / close animation speed (per frame, 0–1: smaller = slower & floatier)
-  const DEPTH_BLUR = 4;          // px of blur on the card furthest back (0 = no blur)
+  const DEPTH_BLUR = 0;          // px of blur on the cards themselves (0 = cards stay sharp; the glass blurs what's behind)
+  const PERSPECTIVE = 1400;      // px — lower = stronger 3d effect
   const OPEN_EASE = 0.12;
   const CLOSE_EASE = 0.06;
   const openMix = cards.map(() => 0);
@@ -93,7 +94,7 @@
     const k = focused >= 0 ? 0.2 : 1;
     tiltNow.x += (tiltTarget.x * k - tiltNow.x) * TILT_EASE;
     tiltNow.y += (tiltTarget.y * k - tiltNow.y) * TILT_EASE;
-    tilt.style.transform = `rotateX(${tiltNow.x}deg) rotateY(${tiltNow.y}deg)`;
+    // (the tilt is applied to each card below, so cards can stack flat and blur what's behind them)
 
     const R = radius();
     const t = (now - start) / 1000;
@@ -136,8 +137,11 @@
       opacity *= 1 - 0.82 * fade;
       bright *= 1 - 0.4 * fade;
 
+      // each card carries its own perspective + the ring's tilt, so the cards don't share
+      // one 3d space — that's what lets the frosted glass blur the cards behind it
       card.style.transform =
-        `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg)`;
+        `translate(-50%, -50%) perspective(${PERSPECTIVE}px) rotateX(${tiltNow.x.toFixed(2)}deg) rotateY(${tiltNow.y.toFixed(2)}deg) ` +
+        `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg)`;
       card.style.opacity = opacity.toFixed(3);
       // cards further back are softly out of focus, so through the glass they look blurred
       const blurPx = depth * DEPTH_BLUR * (1 - m);
