@@ -7,6 +7,8 @@
 (function () {
   const SRC = 'audio/Yume%20Nikki%20OST%20-%20Sky%20Garden.mp3';
   const VOLUME = 0.45;         // 0 – 1
+  const CLICK_SRC = 'audio/click%20sound.mp3';
+  const CLICK_VOLUME = 0.6;    // 0 – 1
   const KEY_ON = 'natalie-10c-sound';
   const KEY_TIME = 'natalie-10c-sound-time';
 
@@ -70,9 +72,20 @@
     fadeTo(0, 400, () => audio.pause());
   }
 
+  // click sound for the ring (only audible while sound is switched on)
+  const clickAudio = new Audio(CLICK_SRC);
+  clickAudio.preload = 'auto';
+  window.siteClick = function () {
+    if (!on) return;
+    const c = clickAudio.cloneNode();
+    c.volume = CLICK_VOLUME;
+    c.play().catch(() => {});
+  };
+
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     on ? turnOff() : turnOn();
+    window.siteClick();
   });
 
   // remember where the song was when leaving the page

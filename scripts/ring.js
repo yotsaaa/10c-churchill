@@ -35,6 +35,28 @@
   const start = performance.now();
 
   // wider ring on big screens so the side cards peek out more
+  let lastPassing = 0;
+  const click = () => { if (window.siteClick) window.siteClick(); };
+
+  // ---- card backs: symbol pattern + card number, shown when a card faces away
+  const BACK_GLYPHS = ['✦', '·', '⋆', '˚', '✧', '·', '∴', '·', '◇', '·'];
+  function buildBack(card, label) {
+    const back = document.createElement('div');
+    back.className = 'card-back';
+    back.setAttribute('aria-hidden', 'true');
+    let rows = [];
+    for (let r = 0; r < 34; r++) {
+      let row = '';
+      for (let c = 0; c < 40; c++) row += BACK_GLYPHS[(r * 3 + c * 2) % BACK_GLYPHS.length] + ' ';
+      rows.push(row);
+    }
+    back.innerHTML = '<pre class="back-pattern"></pre>' +
+      '<div class="back-emblem">@}-&gt;--<br><span class="back-num">✩ ' + label + ' ✩</span><br><small>natalie churchill</small></div>';
+    back.querySelector('pre').textContent = rows.join('\n');
+    card.appendChild(back);
+  }
+  cards.forEach((card, i) => buildBack(card, (dots[i] && dots[i].textContent.trim()) || String(i)));
+
   const radius = () => cards[0].offsetWidth * (innerWidth > 700 ? 1.25 : 0.95);
   const frontIndex = () => ((Math.round(-target / STEP) % N) + N) % N;
 
@@ -80,10 +102,14 @@
 
       let x = Math.sin(rad) * R;
       let z = (Math.cos(rad) - 1) * R;
-      let y = bob - depth * 30;
-      let rotY = a * FACE;
-      let opacity = 1 - depth * 0.55;
-      let bright = 1 - depth * 0.45;
+      let y = bob - depth * 75;            // cards at the back sit a little higher so their backs peek out
+      // in front: cards mostly face you. past the sides they keep turning,
+      // so a card at the very back shows you its back
+      const abs = Math.abs(a);
+      let rotY = abs <= 90 ? a * FACE
+        : Math.sign(a) * (90 * FACE + ((abs - 90) / 90) * (180 - 90 * FACE));
+      let opacity = 1 - depth * 0.4;
+      let bright = 1 - depth * 0.3;
 
       if (focused >= 0) {
         if (i === focused) {
@@ -98,10 +124,20 @@
       card.style.opacity = opacity.toFixed(3);
       card.style.filter = bright < 0.99 ? `brightness(${bright.toFixed(3)})` : '';
       card.style.zIndex = String(Math.round(1000 + z));
+
+      const back = Math.cos((rotY * Math.PI) / 180) < 0;
+      if (back !== card.classList.contains('show-back')) card.classList.toggle('show-back', back);
     });
 
     const front = focused >= 0 ? focused : frontIndex();
     dots.forEach((d, i) => d.classList.toggle('active', i === front));
+
+    // little click each time a new card passes the front while spinning by hand
+    const passing = ((Math.round(-angle / STEP) % N) + N) % N;
+    if (passing !== lastPassing) {
+      if (focused < 0 && (dragging || Math.abs(velocity) > 0.05)) click();
+      lastPassing = passing;
+    }
 
     requestAnimationFrame(frame);
   }
@@ -109,6 +145,7 @@
   // ---- open / close -------------------------------------------------------
   function openCard(i, { updateHash = true } = {}) {
     if (i < 0 || i >= N) return;
+    if (focused !== i) click();
     focused = i;
     // turn the ring the short way so this card ends up in front
     const want = -i * STEP;
@@ -126,6 +163,7 @@
     if (focused < 0) return;
     cards[focused].classList.remove('focused');
     focused = -1;
+    click();
     stage.classList.remove('is-focused');
     history.replaceState(null, '', location.pathname);
     lastInteraction = performance.now();
@@ -210,11 +248,11 @@
   // ---- buttons & keys -----------------------------------------------------
   document.getElementById('ringPrev')?.addEventListener('click', () => {
     if (focused >= 0) return openCard((focused - 1 + N) % N);
-    target += STEP; lastInteraction = performance.now();
+    target += STEP; lastInteraction = performance.now(); click();
   });
   document.getElementById('ringNext')?.addEventListener('click', () => {
     if (focused >= 0) return openCard((focused + 1) % N);
-    target -= STEP; lastInteraction = performance.now();
+    target -= STEP; lastInteraction = performance.now(); click();
   });
   dots.forEach((d, i) => d.addEventListener('click', () => openCard(i)));
   closeBtn?.addEventListener('click', closeCard);

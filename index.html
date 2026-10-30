@@ -9,21 +9,23 @@
 <html lang="en" class="ring-page">
 <head>
   <meta charset="utf-8" />
+  <link rel="icon" type="image/png" href="Images/siteIcon.png" />
+  <link rel="apple-touch-icon" href="Images/siteIcon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=0.9" />
   <title>natalie churchill // 10c f26</title>
   <meta name="description" content="personal digital art and coursework archive for 10c fall 2026 by natalie churchill" />
 
   <!-- Fonts & Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=1033" />
-  <link rel="stylesheet" href="css/ascii-loader.css?v=1033" />
-  <link rel="stylesheet" href="css/sparkles.css?v=1033" />
-  <link rel="stylesheet" href="css/ring.css?v=1033" />
+  <link rel="stylesheet" href="css/style.css?v=1035" />
+  <link rel="stylesheet" href="css/ascii-loader.css?v=1035" />
+  <link rel="stylesheet" href="css/sparkles.css?v=1035" />
+  <link rel="stylesheet" href="css/ring.css?v=1035" />
 
   <!-- 3D Model Viewer Component -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
   <!-- ASCII Load-in Animation Engine -->
-  <script defer src="scripts/ascii-loader.js?v=1033"></script>
+  <script defer src="scripts/ascii-loader.js?v=1035"></script>
 </head>
 
 <body>
@@ -145,24 +147,27 @@
         <div class="card-open-hint">[ click to open · then drag the model to rotate ]</div>
       </article>
 
-      <!-- Project 03: (Upcoming / Locked) -->
-      <article class="ring-card artwork-box locked-project" id="project-03" data-index="2">
-        <h3>⋆*✩ project 03: [unopened archive] ✩*⋆</h3>
-        <p class="card-prompt" style="color:#888;">third semester exploration / final</p>
-        <div class="card-media">
-          <img src="Images/p3 Placeholder.png" alt="project 03: unopened archive" draggable="false" />
+      <!-- Project 03: video project (teaser until it's ready) -->
+      <article class="ring-card artwork-box locked-project" id="project-03" data-index="3">
+        <h3>⋆*✩ project 03: [video // coming soon] ✩*⋆</h3>
+        <p class="card-prompt" style="color:#aaa;">video project · in production</p>
+        <div class="card-media tease-screen" data-no-glitch role="img" aria-label="project 03 video teaser — coming soon">
+          <pre class="tease-noise" aria-hidden="true"></pre>
+          <div class="tease-top"><span class="tease-rec">● rec</span><span class="tease-tc">00:00:00:00</span></div>
+          <div class="tease-center"><span>▶ coming soon</span></div>
+          <div class="tease-bottom"><span>p03 // video</span><span>f26</span></div>
         </div>
         <div class="card-extra"><div>
           <div class="locked-frame" style="height: 70px;">
-            <small>[ slot 03 / 03 · upcoming ]</small>
+            <small>[ slot 03 / 03 · video in production — check back soon ]</small>
           </div>
         </div></div>
         <div class="artwork-meta">
-          <span>medium: tba</span>
+          <span>medium: video</span>
           <span>semester: fall 2026</span>
-          <span>status: locked (03 / 03)</span>
+          <span>status: in production (03 / 03)</span>
         </div>
-        <div class="card-open-hint">[ click to open ]</div>
+        <div class="card-open-hint">[ click to open · teaser ]</div>
       </article>
 
     </div>
@@ -187,10 +192,11 @@
   <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="sound off — click to play" title="toggle sound" data-no-glitch><span class="snd-icon">♫</span><span class="snd-dot">◌</span></button>
 
   <!-- Interactive Scripts -->
-  <script defer src="scripts/lightswitch.js?v=1033"></script>
-  <script defer src="scripts/sparkles.js?v=1033"></script>
-  <script defer src="scripts/glitch.js?v=1033"></script>
-  <script defer src="scripts/sound.js?v=1033"></script>
-  <script defer src="scripts/ring.js?v=1033"></script>
+  <script defer src="scripts/lightswitch.js?v=1035"></script>
+  <script defer src="scripts/sparkles.js?v=1035"></script>
+  <script defer src="scripts/glitch.js?v=1035"></script>
+  <script defer src="scripts/sound.js?v=1035"></script>
+  <script defer src="scripts/ring.js?v=1035"></script>
+  <script defer src="scripts/teaser.js?v=1035"></script>
 </body>
 </html>

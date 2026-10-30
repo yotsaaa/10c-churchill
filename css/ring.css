@@ -238,3 +238,112 @@ html.ring-page body {
   font-size: 10.5px;
   text-align: center;
 }
+
+/* --- card backs ----------------------------------------------------------
+   when a card turns away from you, its front hides and this pattern shows.
+   (flipped with scaleX(-1) so it isn't mirrored when seen from behind) */
+.ring-card .card-back {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transform: scaleX(-1);
+  pointer-events: none;
+  background: rgba(10, 8, 12, 0.96);
+}
+.ring-card.show-back > :not(.card-back) { visibility: hidden; }
+.ring-card.show-back .card-back { display: flex; }
+.ring-card.show-back { border-color: rgba(244, 166, 194, 0.55); }
+
+.card-back .back-pattern {
+  position: absolute;
+  inset: -6px;
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--pink-dim);
+  opacity: 0.6;
+  white-space: pre;
+}
+.card-back .back-emblem {
+  position: relative;
+  border: 1px dotted var(--pink-main);
+  background: rgba(4, 3, 5, 0.92);
+  padding: 12px 20px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: 0.18em;
+  color: var(--pink-soft);
+  text-align: center;
+  box-shadow: 0 0 24px rgba(244, 166, 194, 0.15);
+}
+.card-back .back-num { color: var(--pink-main); font-size: 15px; }
+.card-back small { color: var(--pink-dim); font-size: 9.5px; letter-spacing: 0.12em; }
+
+/* --- project 03 teaser: fake video screen until the real video is ready -- */
+.tease-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 10px 0;
+  background: #000;
+  border: 1px solid rgba(244, 166, 194, 0.25);
+  overflow: hidden;
+}
+.tease-screen::after {               /* scanlines */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0 1px, transparent 1px 3px);
+}
+.tease-noise {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 10px;
+  color: var(--pink-dim);
+  opacity: 0.55;
+  white-space: pre;
+  overflow: hidden;
+}
+.tease-top, .tease-bottom {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--pink-soft);
+  text-shadow: 0 0 4px #000;
+}
+.tease-top { top: 8px; }
+.tease-bottom { bottom: 8px; color: var(--pink-dim); }
+.tease-rec { color: #ff5c8a; animation: tease-blink 1.2s steps(2, start) infinite; }
+.tease-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  color: var(--pink-soft);
+  text-shadow: 0 0 10px rgba(244, 166, 194, 0.8), 0 0 2px #000;
+}
+.tease-center span {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px dotted var(--pink-main);
+  padding: 6px 14px;
+}
+@keyframes tease-blink { to { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .tease-rec { animation: none; } }
