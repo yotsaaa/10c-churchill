@@ -127,7 +127,7 @@
     lastInteraction = performance.now();
   }
 
-  // project 02's 3d model only loads once its card is opened
+  // project 02's 3d model (loaded straight away, see bottom of file)
   function loadModel(card) {
     const slot = card.querySelector('.card-model');
     if (!slot || slot.querySelector('model-viewer')) return;
@@ -230,6 +230,9 @@
   }
   window.addEventListener('hashchange', openFromHash);
   openFromHash();
+
+  // load the 3d model(s) right away so they spin inside the floating card
+  cards.forEach((c) => { if (c.dataset.model) loadModel(c); });
 
   requestAnimationFrame(frame);
 })();

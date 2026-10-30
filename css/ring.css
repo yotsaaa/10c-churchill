@@ -141,16 +141,21 @@ html.ring-page body {
 .ring-card.focused .card-open-hint { opacity: 0; height: 0; margin: 0; overflow: hidden; }
 .ring-card.focused .card-media img { max-height: 46vh; }
 
-/* project 02: image while floating, live model once opened */
-.ring-card .card-model { display: none; }
-.ring-card.focused.has-model .card-model { display: block; }
-.ring-card.focused.has-model .card-media img { display: none; }
+/* project 02: live 3d model is always shown (the image is only its loading poster) */
+.ring-card.has-model .card-media { display: none; }
+.ring-card.has-model .card-model { display: block; margin: 10px 0; }
+/* while floating, the model just spins — dragging over it spins the ring, a click opens the card */
+.ring-card:not(.focused) .card-model model-viewer { pointer-events: none; }
 .ring-card .card-model model-viewer {
-  height: min(420px, 48vh);
+  display: block;
+  width: 100%;
+  height: 230px;
   background-color: #0b090d;
   border: 1px solid rgba(244, 166, 194, 0.25);
   border-radius: 0;
+  transition: height 0.5s ease;
 }
+.ring-card.focused .card-model model-viewer { height: min(420px, 48vh); }
 
 .ring-stage.is-focused .ring-card:not(.focused) { pointer-events: auto; }
 
@@ -203,6 +208,7 @@ html.ring-page body {
   .ring-header h1 { font-size: 13px; }
   .ring-card.artwork-box { top: 56%; }
   .ring-card .card-media img { max-height: 170px; }
+  .ring-card:not(.focused) .card-model model-viewer { height: 170px; }
   .ring-card .artwork-meta { font-size: 9px; }
   .ring-close { top: 14px; right: 12px; }
   /* corner badges would stack on top of the header here */
