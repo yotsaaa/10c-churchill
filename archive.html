@@ -6,7 +6,7 @@
   @}->-- natalie churchill // 10c f26 --<-{@
   web art / digital media archive : page 2 // projects
 -->
-<html lang="en">
+<html lang="en" class="ring-page">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=0.9" />
@@ -17,22 +17,10 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/ascii-loader.css" />
   <link rel="stylesheet" href="css/sparkles.css" />
-  <style>
-    .nav-breadcrumbs {
-      font-family: var(--font-pixel);
-      font-size: 11px;
-      color: var(--pink-dim);
-      margin-bottom: 12px;
-    }
+  <link rel="stylesheet" href="css/ring.css" />
 
-    .nav-breadcrumbs a {
-      color: var(--pink-soft);
-    }
-  </style>
-
-  <!-- 3D Model Viewer Component -->
+  <!-- 3D Model Viewer Component (only used once project 02 is opened) -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-
 </head>
 
 <body>
@@ -50,8 +38,6 @@
     <nav>
       <a href="index.html">⋆*✩ central portal</a>
       <a href="archive.html">⋆*✩ archive // page 2</a>
-      <a href="archive.html#statement">⋆*✩ course statement</a>
-      <a href="archive.html#log">⋆*✩ semester index (3 works)</a>
       <br>
       <span style="color: var(--pink-soft);">semester projects:</span><br>
       <a href="archive.html#project-01">♡ project 01: uncanny valley <i>[online]</i></a>
@@ -65,140 +51,104 @@
     </nav>
   </div>
 
-  <br><br>
 
   <!-- Page 2 header -->
-  <div class="portal-wrapper" id="portal">
+  <header class="ring-header" id="portal">
     <div class="nav-breadcrumbs">
-      <a href="index.html">← central portal</a> ෧ page 2 // projects
+      <a href="index.html">← central portal</a> · page 2 // projects
     </div>
-
     <h1>
       @&#125;->-- <a href="index.html" style="color:inherit; text-decoration:none;"><span id="colr">natalie churchill</span></a> // 10c f26 <span class="blink">♥</span>
     </h1>
+    <div class="ring-hint">drag to spin ⋆ click a project to open</div>
+  </header>
 
-    <h2>
-      <a href="archive.html#project-01" id="continue">
-        enter // project 01: uncanny valley
-      </a>
-    </h2>
-    <small id="portal-subtitle">adobe illustrator & photoshop ෧ prompt: uncanny valley</small>
+  <!-- 3D project ring -->
+  <main class="ring-stage" id="ringStage" aria-label="project ring — drag to spin, click a project to open">
+    <div class="ring-tilt" id="ringTilt">
+
+      <!-- Project 01: Uncanny Valley -->
+      <article class="ring-card artwork-box" id="project-01" data-index="0">
+        <h3>⋆*✩ project 01: "uncanny valley" ✩*⋆</h3>
+        <p class="card-prompt">prompt: uncanny valley · tools: adobe illustrator &amp; photoshop</p>
+        <div class="card-media">
+          <img src="Images/p1final.png" alt="project 01: uncanny valley — final artwork" draggable="false" />
+        </div>
+        <div class="card-extra"><div>
+          <div style="margin: 10px 0 12px;">
+            <a href="p1.html" class="net-btn" style="padding: 4px 12px; font-size: 11px;">⋆*✩ view project 01 final pdf ↗</a>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>medium: illustrator / photoshop</span>
+          <span>prompt: "uncanny valley"</span>
+          <span>status: complete (01 / 03)</span>
+        </div>
+        <div class="card-open-hint">[ click to open ]</div>
+      </article>
+
+      <!-- Project 02: Quasi-Object -->
+      <article class="ring-card artwork-box has-model" id="project-02" data-index="1"
+               data-model="models/cube-map-demo.glb" data-model-alt="A 3D model of a creative artifact — cube map demo">
+        <h3>⋆*✩ project 02: "quasi-object" ✩*⋆</h3>
+        <p class="card-prompt">prompt: quasi-object · tools: blender &amp; 3d web reconstruction</p>
+        <div class="card-media">
+          <img src="Images/p2 placeholder.png" alt="project 02: quasi-object — artifact study" draggable="false" />
+        </div>
+        <div class="card-model"></div>
+        <div class="card-extra"><div>
+          <div class="project-details">
+            <b>project description:</b> generate a 3d file/object based on an existing artifact (image reference).<br><br>
+            <span style="color: var(--pink-dim);">methodology:</span>
+            <ul style="margin: 4px 0 8px 18px; text-align: left; list-style: square; color: #c0c0c8;">
+              <li>select objects</li>
+              <li>document objects</li>
+              <li>reconstruct in 3D (blender)</li>
+              <li>make accessible on page as a singular object and within an environment or &lsquo;exhibition&rsquo; space</li>
+            </ul>
+            <small style="color: var(--pink-dim); display: block; margin-top: 6px;">[ 3d model placeholder online · drag to rotate / scroll to zoom ]</small>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>medium: blender / .glb 3d</span>
+          <span>prompt: "quasi-object"</span>
+          <span>status: in progress (02 / 03)</span>
+        </div>
+        <div class="card-open-hint">[ click to open · 3d model inside ]</div>
+      </article>
+
+      <!-- Project 03: (Upcoming / Locked) -->
+      <article class="ring-card artwork-box locked-project" id="project-03" data-index="2">
+        <h3>⋆*✩ project 03: [unopened archive] ✩*⋆</h3>
+        <p class="card-prompt" style="color:#888;">third semester exploration / final</p>
+        <div class="card-media">
+          <img src="Images/p3 Placeholder.png" alt="project 03: unopened archive" draggable="false" />
+        </div>
+        <div class="card-extra"><div>
+          <div class="locked-frame" style="height: 70px;">
+            <small>[ slot 03 / 03 · upcoming ]</small>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>medium: tba</span>
+          <span>semester: fall 2026</span>
+          <span>status: locked (03 / 03)</span>
+        </div>
+        <div class="card-open-hint">[ click to open ]</div>
+      </article>
+
+    </div>
+  </main>
+
+  <button class="ring-btn ring-close" id="ringClose" aria-label="close project">✕ back to ring</button>
+
+  <div class="ring-controls" role="group" aria-label="project ring controls">
+    <button class="ring-btn" id="ringPrev" aria-label="previous project">‹</button>
+    <button class="ring-btn ring-dot" aria-label="open project 01">01</button>
+    <button class="ring-btn ring-dot" aria-label="open project 02">02</button>
+    <button class="ring-btn ring-dot" aria-label="open project 03">03</button>
+    <button class="ring-btn" id="ringNext" aria-label="next project">›</button>
   </div>
-
-  <hr>
-
-  <!-- Center Content Flow (soloshow.online style) -->
-  <div class="center-flow">
-    <!-- Statement Box (.minky) -->
-    <div class="minky" id="statement">
-      natalie 🎔 churchill {des 10c ෧ archive, v1} is a personal digital art space.<br>
-      housing <b>three major projects</b> throughout the fall 2026 semester.<br>
-      project 01 is currently online with the prompt <i>"uncanny valley"</i> (illustrator / photoshop).<br>
-      project 02 is in progress: <i>"quasi-object"</i> (blender 3D artifact study).<br>
-      you can inspect the <a href="archive.html#log">semester log</a> below or view the source on <a href="https://github.com/yotsaaa/10c-churchill" target="_blank">github</a>.
-    </div>
-
-    <hr>
-
-    <!-- Coursework / Update Log: 3 Projects -->
-    <div class="update" id="log">
-      ♡ project 01: ⋆*✩ <a href="archive.html#project-01">uncanny valley</a> {illustrator + photoshop} <span class="update-date">[complete // online]</span> — <a href="p1.html">view pdf ↗</a><br>
-      ♡ project 02: ⋆*✩ <a href="archive.html#project-02">quasi-object</a> {blender + 3d reconstruction} <span class="update-date">[in progress // 3d placeholder]</span><br>
-      ♡ project 03: ⋆*✩ <a href="archive.html#project-03">project 03</a> <span style="color:#777;">{final exploration}</span> <span class="update-date">[locked]</span>
-    </div>
-
-    <hr>
-
-    <!-- Project 01: Uncanny Valley -->
-    <div class="artwork-box" id="project-01">
-      <h3>⋆*✩ project 01: "uncanny valley" ✩*⋆</h3>
-      <p style="font-family: var(--font-serif); font-size: 14px; font-style: italic; color: #ccc; margin: 4px 0 10px;">
-        prompt: uncanny valley ෧ tools: adobe illustrator & photoshop
-      </p>
-
-      <a href="p1.html" title="click to inspect final project PDF" style="display: block; text-decoration: none;">
-        <img src="Images/p1final.png" alt="project 01: uncanny valley — final artwork" />
-      </a>
-
-      <div style="margin: 12px 0 10px;">
-        <a href="p1.html" class="net-btn" style="padding: 4px 12px; font-size: 11px;">⋆*✩ view project 01 final pdf ↗</a>
-      </div>
-
-      <div class="artwork-meta">
-        <span>medium: illustrator / photoshop</span>
-        <span>prompt: "uncanny valley"</span>
-        <span>status: complete (01 / 03)</span>
-      </div>
-    </div>
-
-    <!-- Project 02: Quasi-Object -->
-    <div class="artwork-box" id="project-02">
-      <h3>⋆*✩ project 02: "quasi-object" ✩*⋆</h3>
-      <p style="font-family: var(--font-serif); font-size: 14px; font-style: italic; color: #ccc; margin: 4px 0 10px;">
-        prompt: quasi-object ෧ tools: blender &amp; 3d web reconstruction
-      </p>
-
-      <section class="model-container">
-        <h2>3D Artifact Study</h2>
-        <model-viewer
-          src="models/cube-map-demo.glb"
-          poster="Images/p2 placeholder.png"
-          alt="A 3D model of a creative artifact — cube map demo"
-          shadow-intensity="1"
-          camera-controls
-          auto-rotate
-          ar>
-        </model-viewer>
-      </section>
-
-      <div class="project-details">
-        <b>project description:</b> generate a 3d file/object based on an existing artifact (image reference).<br><br>
-        <span style="color: var(--pink-dim);">methodology:</span>
-        <ul style="margin: 4px 0 8px 18px; text-align: left; list-style: square; color: #c0c0c8;">
-          <li>select objects</li>
-          <li>document objects</li>
-          <li>reconstruct in 3D (blender)</li>
-          <li>make accessible on page as a singular object and within an environment or &lsquo;exhibition&rsquo; space</li>
-        </ul>
-        <small style="color: var(--pink-dim); display: block; margin-top: 6px;">[ 3d model placeholder online ෧ drag to rotate / scroll to zoom ]</small>
-      </div>
-
-      <div class="artwork-meta">
-        <span>medium: blender / .glb 3d</span>
-        <span>prompt: "quasi-object"</span>
-        <span>status: in progress (02 / 03)</span>
-      </div>
-    </div>
-
-    <!-- Project 03: (Upcoming / Locked) -->
-    <div class="artwork-box locked-project" id="project-03">
-      <h3>⋆*✩ project 03: [unopened archive] ✩*⋆</h3>
-      <p style="font-family: var(--font-serif); font-size: 13px; font-style: italic; color: #888; margin: 4px 0 6px;">
-        third semester exploration / final
-      </p>
-
-      <div class="locked-frame">
-        <small>[ slot 03 / 03 ෧ upcoming ]</small>
-      </div>
-
-      <div class="artwork-meta">
-        <span>medium: tba</span>
-        <span>semester: fall 2026</span>
-        <span>status: locked (03 / 03)</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <p>
-      natalie churchill 🎔 10c fall 2026 ☆
-      <a href="index.html">portal</a> ☆
-      <a href="#portal">top</a> ☆
-      <a href="https://github.com/yotsaaa/10c-churchill" target="_blank">repo</a>
-    </p>
-    <small>3 semester projects // pure html & css // hand-crafted</small>
-  </footer>
 
   <!-- Fixed Corner Badges (soloshow.online style) -->
   <div class="sweety">
@@ -212,5 +162,6 @@
   <!-- Interactive Scripts -->
   <script defer src="scripts/lightswitch.js"></script>
   <script defer src="scripts/sparkles.js"></script>
+  <script defer src="scripts/ring.js"></script>
 </body>
 </html>

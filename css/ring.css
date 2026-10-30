@@ -1,0 +1,211 @@
+/* ==========================================================================
+   page 2 // 3d project ring
+   cards float on a ring you drag to spin; the whole ring tilts with the cursor.
+   click a card -> it flies to the front & opens. esc / ✕ / click outside -> back.
+   ========================================================================== */
+
+html.ring-page,
+html.ring-page body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.ring-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  text-align: center;
+  padding: 26px 16px 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.ring-header a,
+.ring-header button { pointer-events: auto; }
+
+.ring-header h1 { margin: 6px 0 4px; }
+
+.nav-breadcrumbs {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--pink-dim);
+}
+.nav-breadcrumbs a { color: var(--pink-soft); }
+
+.ring-hint {
+  font-family: var(--font-pixel);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+/* --- the stage ---------------------------------------------------------- */
+.ring-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ring-stage.dragging { cursor: grabbing; }
+.ring-stage.is-focused { cursor: default; }
+
+.ring-tilt {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* --- cards -------------------------------------------------------------- */
+.ring-card.artwork-box {
+  --card-w: min(400px, 74vw);
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: var(--card-w);
+  max-width: none;
+  margin: 0;
+  padding: 14px 16px 12px;
+  box-sizing: border-box;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  background: rgba(10, 8, 12, 0.92);
+  box-shadow: 0 0 40px rgba(244, 166, 194, 0.06);
+  transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s ease,
+              border-color 0.4s ease;
+}
+
+.ring-card:not(.focused):hover {
+  border-color: var(--pink-soft);
+  box-shadow: 0 0 34px rgba(244, 166, 194, 0.22);
+}
+
+.ring-card h3 { font-size: 13px; letter-spacing: 0.18em; margin: 2px 0 4px; }
+
+.ring-card .card-prompt {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-style: italic;
+  color: #ccc;
+  margin: 2px 0 6px;
+}
+
+.ring-card .card-media img {
+  max-height: 230px;
+  width: 100%;
+  pointer-events: none;   /* so dragging over an image spins the ring */
+  -webkit-user-drag: none;
+}
+
+.ring-card .locked-frame { height: 150px; }
+
+.ring-card .artwork-meta { gap: 10px; font-size: 10px; }
+.ring-card .artwork-meta span { flex: 1; }
+
+.ring-card .card-open-hint {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--pink-dim);
+  margin-top: 6px;
+  transition: opacity 0.3s ease;
+}
+
+/* extras only show once a card is opened */
+.ring-card .card-extra {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.5s ease, opacity 0.4s ease;
+}
+.ring-card .card-extra > div { overflow: hidden; }
+
+/* --- focused (opened) card ---------------------------------------------- */
+.ring-card.focused {
+  --card-w: min(580px, 92vw);
+  max-height: 74vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  cursor: auto;
+  box-shadow: 0 0 60px rgba(244, 166, 194, 0.18);
+  scrollbar-width: thin;
+  scrollbar-color: var(--pink-dim) transparent;
+}
+.ring-card.focused .card-extra { grid-template-rows: 1fr; opacity: 1; }
+.ring-card.focused .card-open-hint { opacity: 0; height: 0; margin: 0; overflow: hidden; }
+.ring-card.focused .card-media img { max-height: 46vh; }
+
+/* project 02: image while floating, live model once opened */
+.ring-card .card-model { display: none; }
+.ring-card.focused.has-model .card-model { display: block; }
+.ring-card.focused.has-model .card-media img { display: none; }
+.ring-card .card-model model-viewer {
+  height: min(420px, 48vh);
+  background-color: #0b090d;
+  border: 1px solid rgba(244, 166, 194, 0.25);
+  border-radius: 0;
+}
+
+.ring-stage.is-focused .ring-card:not(.focused) { pointer-events: auto; }
+
+/* --- controls ----------------------------------------------------------- */
+.ring-controls {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-pixel);
+  transition: opacity 0.4s ease;
+}
+
+.ring-btn {
+  background: rgba(10, 8, 12, 0.85);
+  border: 1px dotted var(--pink-main);
+  color: var(--pink-soft);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.ring-btn:hover,
+.ring-btn.active {
+  background: var(--pink-main);
+  color: #0a080c;
+}
+.ring-btn:focus-visible { outline: 1px solid var(--pink-soft); outline-offset: 2px; }
+
+.ring-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.ring-stage.is-focused ~ .ring-close { opacity: 1; pointer-events: auto; }
+.ring-stage.is-focused ~ .ring-controls,
+.ring-stage.is-focused ~ .ring-header { opacity: 0.15; }
+
+/* phones: smaller header, cards sit a touch lower */
+@media (max-width: 600px) {
+  .ring-header { padding-top: 58px; }
+  .ring-header h1 { font-size: 13px; }
+  .ring-card.artwork-box { top: 56%; }
+  .ring-card .card-media img { max-height: 170px; }
+  .ring-card .artwork-meta { font-size: 9px; }
+  .ring-close { top: 14px; right: 12px; }
+  /* corner badges would stack on top of the header here */
+  html.ring-page .sweety,
+  html.ring-page .motto { display: none; }
+}

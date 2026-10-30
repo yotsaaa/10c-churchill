@@ -1,0 +1,235 @@
+/**
+ * natalie churchill — 10c f26
+ * page 2 // 3d project ring
+ * drag (or ← →) to spin · cursor tilts the ring · click a card to open it
+ */
+
+(function () {
+  const stage = document.getElementById('ringStage');
+  const tilt = document.getElementById('ringTilt');
+  const cards = Array.from(document.querySelectorAll('.ring-card'));
+  const dots = Array.from(document.querySelectorAll('.ring-dot'));
+  const closeBtn = document.getElementById('ringClose');
+  if (!stage || !tilt || !cards.length) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const N = cards.length;
+  const STEP = 360 / N;
+
+  // ---- tunables -----------------------------------------------------------
+  const DRAG_SPEED = 0.28;      // degrees of spin per pixel dragged
+  const FRICTION = 0.93;        // how quickly a flick slows down (closer to 1 = longer glide)
+  const SNAP = 0.08;            // how strongly it settles on the nearest card
+  const TILT_X = 9, TILT_Y = 14; // max cursor tilt in degrees
+  const FACE = 0.32;            // how much side cards turn away (0 = always face you)
+  const AUTO_ADVANCE_MS = 6500; // idle time before it spins to the next project
+
+  // ---- state --------------------------------------------------------------
+  let angle = reduceMotion ? 0 : 250; // starts spun round, settles in on load
+  let velocity = 0;
+  let target = 0;               // the angle we settle on
+  let focused = -1;
+  let dragging = false, moved = 0, lastX = 0, downX = 0, downY = 0;
+  let tiltTarget = { x: 0, y: 0 }, tiltNow = { x: 0, y: 0 };
+  let lastInteraction = performance.now();
+  const start = performance.now();
+
+  // wider ring on big screens so the side cards peek out more
+  const radius = () => cards[0].offsetWidth * (innerWidth > 700 ? 1.25 : 0.95);
+  const frontIndex = () => ((Math.round(-target / STEP) % N) + N) % N;
+
+  // ---- render loop --------------------------------------------------------
+  function frame(now) {
+    // spin physics: free glide while flicked, then settle on nearest card
+    if (!dragging) {
+      if (Math.abs(velocity) > 0.05) {
+        angle += velocity;
+        velocity *= FRICTION;
+        target = Math.round(angle / STEP) * STEP;
+      } else {
+        velocity = 0;
+        angle += (target - angle) * (reduceMotion ? 1 : SNAP);
+      }
+    }
+
+    // idle auto-advance (not while a card is open)
+    if (!reduceMotion && focused < 0 && !dragging && now - lastInteraction > AUTO_ADVANCE_MS) {
+      target -= STEP;
+      lastInteraction = now;
+    }
+
+    // cursor tilt (eased); softer while a card is open so text stays readable
+    const k = focused >= 0 ? 0.2 : 1;
+    tiltNow.x += (tiltTarget.x * k - tiltNow.x) * 0.06;
+    tiltNow.y += (tiltTarget.y * k - tiltNow.y) * 0.06;
+    tilt.style.transform = `rotateX(${tiltNow.x}deg) rotateY(${tiltNow.y}deg)`;
+
+    const R = radius();
+    const t = (now - start) / 1000;
+
+    cards.forEach((card, i) => {
+      let a = i * STEP + angle;
+      a = ((a % 360) + 540) % 360 - 180;            // wrap to -180..180 (0 = front)
+      const rad = (a * Math.PI) / 180;
+      const depth = (1 - Math.cos(rad)) / 2;        // 0 front … 1 back
+      const bob = reduceMotion ? 0 : Math.sin(t * 0.9 + i * 2.1) * 7;
+
+      let x = Math.sin(rad) * R;
+      let z = (Math.cos(rad) - 1) * R;
+      let y = bob - depth * 30;
+      let rotY = a * FACE;
+      let opacity = 1 - depth * 0.55;
+      let bright = 1 - depth * 0.45;
+
+      if (focused >= 0) {
+        if (i === focused) {
+          x = 0; y = -innerHeight * 0.04; z = 40; rotY = 0; opacity = 1; bright = 1;
+        } else {
+          z -= 260; opacity *= 0.18; bright *= 0.6;
+        }
+      }
+
+      card.style.transform =
+        `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg)`;
+      card.style.opacity = opacity.toFixed(3);
+      card.style.filter = bright < 0.99 ? `brightness(${bright.toFixed(3)})` : '';
+      card.style.zIndex = String(Math.round(1000 + z));
+    });
+
+    const front = focused >= 0 ? focused : frontIndex();
+    dots.forEach((d, i) => d.classList.toggle('active', i === front));
+
+    requestAnimationFrame(frame);
+  }
+
+  // ---- open / close -------------------------------------------------------
+  function openCard(i, { updateHash = true } = {}) {
+    if (i < 0 || i >= N) return;
+    focused = i;
+    // turn the ring the short way so this card ends up in front
+    const want = -i * STEP;
+    target = want + Math.round((angle - want) / 360) * 360;
+    velocity = 0;
+    cards.forEach((c, j) => c.classList.toggle('focused', j === i));
+    stage.classList.add('is-focused');
+    const card = cards[i];
+    card.scrollTop = 0;
+    if (card.dataset.model) loadModel(card);
+    if (updateHash) history.replaceState(null, '', '#' + card.id);
+  }
+
+  function closeCard() {
+    if (focused < 0) return;
+    cards[focused].classList.remove('focused');
+    focused = -1;
+    stage.classList.remove('is-focused');
+    history.replaceState(null, '', location.pathname);
+    lastInteraction = performance.now();
+  }
+
+  // project 02's 3d model only loads once its card is opened
+  function loadModel(card) {
+    const slot = card.querySelector('.card-model');
+    if (!slot || slot.querySelector('model-viewer')) return;
+    const mv = document.createElement('model-viewer');
+    mv.setAttribute('src', card.dataset.model);
+    mv.setAttribute('alt', card.dataset.modelAlt || '3d model');
+    mv.setAttribute('poster', card.querySelector('.card-media img')?.getAttribute('src') || '');
+    mv.setAttribute('camera-controls', '');
+    mv.setAttribute('auto-rotate', '');
+    mv.setAttribute('shadow-intensity', '1');
+    mv.setAttribute('ar', '');
+    slot.appendChild(mv);
+  }
+
+  // ---- pointer: drag to spin, click to open --------------------------------
+  stage.addEventListener('pointerdown', (e) => {
+    lastInteraction = performance.now();
+    downX = lastX = e.clientX; downY = e.clientY; moved = 0;
+    // inside an open card, let people scroll, select, use links & the 3d viewer
+    if (focused >= 0 && e.target.closest('.ring-card.focused')) return;
+    if (e.target.closest('a, button, model-viewer')) return;
+    if (focused >= 0) return; // a click outside closes (handled on pointerup)
+    dragging = true;
+    velocity = 0;
+    stage.classList.add('dragging');
+    stage.setPointerCapture(e.pointerId);
+  });
+
+  stage.addEventListener('pointermove', (e) => {
+    // tilt follows the cursor (mouse/pen only — not fingers)
+    if (e.pointerType !== 'touch') {
+      tiltTarget.x = -((e.clientY / innerHeight) - 0.5) * 2 * TILT_X;
+      tiltTarget.y = ((e.clientX / innerWidth) - 0.5) * 2 * TILT_Y;
+    }
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    lastX = e.clientX;
+    moved = Math.max(moved, Math.hypot(e.clientX - downX, e.clientY - downY));
+    angle += dx * DRAG_SPEED;
+    velocity = dx * DRAG_SPEED;
+    target = angle;
+    lastInteraction = performance.now();
+  });
+
+  function endDrag(e) {
+    const wasDragging = dragging;
+    dragging = false;
+    stage.classList.remove('dragging');
+    const isClick = Math.hypot(e.clientX - downX, e.clientY - downY) < 6;
+
+    if (focused >= 0) {
+      if (!isClick) return;
+      const hit = document.elementFromPoint(e.clientX, e.clientY);
+      const card = hit && hit.closest('.ring-card');
+      if (!card) closeCard();
+      else if (!card.classList.contains('focused')) openCard(cards.indexOf(card));
+      return;
+    }
+
+    if (wasDragging && isClick) {
+      velocity = 0;
+      // pointer capture means e.target is the stage, so find what's under the pointer
+      if (stage.hasPointerCapture?.(e.pointerId)) stage.releasePointerCapture(e.pointerId);
+      const hit = document.elementFromPoint(e.clientX, e.clientY);
+      const card = hit && hit.closest('.ring-card');
+      if (card && !hit.closest('a, button')) openCard(cards.indexOf(card));
+      target = Math.round(angle / STEP) * STEP;
+    }
+  }
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', () => { dragging = false; stage.classList.remove('dragging'); });
+
+  // mouse leaving the window lets the tilt drift back to centre
+  document.addEventListener('mouseleave', () => { tiltTarget.x = 0; tiltTarget.y = 0; });
+
+  // ---- buttons & keys -----------------------------------------------------
+  document.getElementById('ringPrev')?.addEventListener('click', () => {
+    if (focused >= 0) return openCard((focused - 1 + N) % N);
+    target += STEP; lastInteraction = performance.now();
+  });
+  document.getElementById('ringNext')?.addEventListener('click', () => {
+    if (focused >= 0) return openCard((focused + 1) % N);
+    target -= STEP; lastInteraction = performance.now();
+  });
+  dots.forEach((d, i) => d.addEventListener('click', () => openCard(i)));
+  closeBtn?.addEventListener('click', closeCard);
+
+  window.addEventListener('keydown', (e) => {
+    if (document.getElementById('sidenav')?.classList.contains('open')) return;
+    if (e.key === 'Escape') closeCard();
+    else if (e.key === 'ArrowLeft') document.getElementById('ringPrev')?.click();
+    else if (e.key === 'ArrowRight') document.getElementById('ringNext')?.click();
+    else if (e.key === 'Enter' && focused < 0 && document.activeElement === document.body) openCard(frontIndex());
+  });
+
+  // ---- deep links: archive.html#project-02 opens that card -----------------
+  function openFromHash() {
+    const i = cards.findIndex((c) => '#' + c.id === location.hash);
+    if (i >= 0) setTimeout(() => openCard(i, { updateHash: false }), reduceMotion ? 0 : 700);
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+
+  requestAnimationFrame(frame);
+})();
