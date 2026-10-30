@@ -20,7 +20,8 @@
   const DRAG_SPEED = 0.28;      // degrees of spin per pixel dragged
   const FRICTION = 0.93;        // how quickly a flick slows down (closer to 1 = longer glide)
   const SNAP = 0.08;            // how strongly it settles on the nearest card
-  const TILT_X = 9, TILT_Y = 14; // max cursor tilt in degrees
+  const TILT_X = 2.5, TILT_Y = 4; // max cursor tilt in degrees (subtle)
+  const TILT_EASE = 0.025;        // how lazily the tilt follows the cursor (smaller = slower)
   const FACE = 0.32;            // how much side cards turn away (0 = always face you)
   const AUTO_ADVANCE_MS = 6500; // idle time before it spins to the next project
 
@@ -35,6 +36,11 @@
   const start = performance.now();
 
   // wider ring on big screens so the side cards peek out more
+  // open / close animation speed (per frame, 0–1: smaller = slower & floatier)
+  const OPEN_EASE = 0.12;
+  const CLOSE_EASE = 0.06;
+  const openMix = cards.map(() => 0);
+  let fadeMix = 0;
   let lastPassing = 0;
   const click = () => { if (window.siteClick) window.siteClick(); };
 
@@ -86,12 +92,14 @@
 
     // cursor tilt (eased); softer while a card is open so text stays readable
     const k = focused >= 0 ? 0.2 : 1;
-    tiltNow.x += (tiltTarget.x * k - tiltNow.x) * 0.06;
-    tiltNow.y += (tiltTarget.y * k - tiltNow.y) * 0.06;
+    tiltNow.x += (tiltTarget.x * k - tiltNow.x) * TILT_EASE;
+    tiltNow.y += (tiltTarget.y * k - tiltNow.y) * TILT_EASE;
     tilt.style.transform = `rotateX(${tiltNow.x}deg) rotateY(${tiltNow.y}deg)`;
 
     const R = radius();
     const t = (now - start) / 1000;
+    const anyOpen = focused >= 0 ? 1 : 0;
+    fadeMix += (anyOpen - fadeMix) * (reduceMotion ? 1 : anyOpen ? OPEN_EASE : CLOSE_EASE);
 
     cards.forEach((card, i) => {
       let a = i * STEP + angle;
@@ -111,13 +119,23 @@
       let opacity = 1 - depth * 0.4;
       let bright = 1 - depth * 0.3;
 
-      if (focused >= 0) {
-        if (i === focused) {
-          x = 0; y = -innerHeight * 0.04; z = 40; rotY = 0; opacity = 1; bright = 1;
-        } else {
-          z -= 260; opacity *= 0.18; bright *= 0.6;
-        }
-      }
+      // blend smoothly between "on the ring" and "opened" instead of jumping
+      // (opening eases in fairly quickly, closing drifts back more slowly)
+      const want = i === focused ? 1 : 0;
+      openMix[i] += (want - openMix[i]) * (reduceMotion ? 1 : want ? OPEN_EASE : CLOSE_EASE);
+      const m = openMix[i];
+      x += (0 - x) * m;
+      y += (-innerHeight * 0.04 - y) * m;
+      z += (40 - z) * m;
+      rotY += (0 - rotY) * m;
+      opacity += (1 - opacity) * m;
+      bright += (1 - bright) * m;
+
+      // the other cards sink back & fade while something is open
+      const fade = Math.max(0, fadeMix - m);   // (the card being closed never dips)
+      z -= 260 * fade;
+      opacity *= 1 - 0.82 * fade;
+      bright *= 1 - 0.4 * fade;
 
       card.style.transform =
         `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg)`;
@@ -140,6 +158,15 @@
     }
 
     requestAnimationFrame(frame);
+  }
+
+  // ---- spin a card round to the front (the short way) ----------------------
+  function spinTo(i) {
+    const want = -i * STEP;
+    target = want + Math.round((angle - want) / 360) * 360;
+    velocity = 0;
+    lastInteraction = performance.now();
+    click();
   }
 
   // ---- open / close -------------------------------------------------------
@@ -235,8 +262,13 @@
       if (stage.hasPointerCapture?.(e.pointerId)) stage.releasePointerCapture(e.pointerId);
       const hit = document.elementFromPoint(e.clientX, e.clientY);
       const card = hit && hit.closest('.ring-card');
-      if (card && !hit.closest('a, button')) openCard(cards.indexOf(card));
       target = Math.round(angle / STEP) * STEP;
+      const idx = card && !hit.closest('a, button') ? cards.indexOf(card) : -1;
+      if (idx >= 0) {
+        // front card opens; any other card spins round to the front first
+        if (idx === frontIndex()) openCard(idx);
+        else spinTo(idx);
+      }
     }
   }
   stage.addEventListener('pointerup', endDrag);
