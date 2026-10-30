@@ -14,16 +14,16 @@
   <meta name="description" content="personal digital art and coursework archive for 10c fall 2026 by natalie churchill" />
 
   <!-- Fonts & Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=1032" />
-  <link rel="stylesheet" href="css/ascii-loader.css?v=1032" />
-  <link rel="stylesheet" href="css/sparkles.css?v=1032" />
-  <link rel="stylesheet" href="css/ring.css?v=1032" />
+  <link rel="stylesheet" href="css/style.css?v=1033" />
+  <link rel="stylesheet" href="css/ascii-loader.css?v=1033" />
+  <link rel="stylesheet" href="css/sparkles.css?v=1033" />
+  <link rel="stylesheet" href="css/ring.css?v=1033" />
 
   <!-- 3D Model Viewer Component -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
   <!-- ASCII Load-in Animation Engine -->
-  <script defer src="scripts/ascii-loader.js?v=1032"></script>
+  <script defer src="scripts/ascii-loader.js?v=1033"></script>
 </head>
 
 <body>
@@ -40,6 +40,7 @@
 
     <nav>
       <a href="index.html">⋆*✩ central portal</a>
+      <a href="#about">⋆*✩ about this site</a>
       <br>
       <span style="color: var(--pink-soft);">semester projects:</span><br>
       <a href="#project-01">♡ project 01: uncanny valley <i>[online]</i></a>
@@ -65,6 +66,34 @@
   <!-- 3D project ring -->
   <main class="ring-stage" id="ringStage" aria-label="project ring — drag to spin, click a project to open">
     <div class="ring-tilt" id="ringTilt">
+
+      <!-- About / intro card (slot 1 — faces you when the site loads) -->
+      <article class="ring-card artwork-box about-card" id="about">
+        <h3>⋆*✩ natalie churchill ✩*⋆</h3>
+        <p class="card-prompt">art 10c · fall 2026</p>
+        <div class="about-body">
+          <p>
+            hi, welcome ♡ this is my digital archive for <b>art 10c</b> &mdash; a home for the
+            three projects i&rsquo;m making over the fall 2026 semester.
+          </p>
+          <p>
+            each card on this ring is one project: collage work in illustrator &amp; photoshop,
+            a 3d object rebuilt in blender, and a third piece still on its way.
+          </p>
+          <p class="about-how">drag to spin the ring ⋆ click a card to open it</p>
+        </div>
+        <div class="card-extra"><div>
+          <div style="margin: 10px 0 4px;">
+            <a href="https://github.com/yotsaaa/10c-churchill" target="_blank" class="net-btn" style="padding: 4px 12px; font-size: 11px;">⋆*✩ view source on github ↗</a>
+          </div>
+        </div></div>
+        <div class="artwork-meta">
+          <span>natalie churchill</span>
+          <span>art 10c</span>
+          <span>3 projects // f26</span>
+        </div>
+        <div class="card-open-hint">[ click to open ]</div>
+      </article>
 
       <!-- Project 01: Uncanny Valley -->
       <article class="ring-card artwork-box" id="project-01" data-index="0">
@@ -143,6 +172,7 @@
 
   <div class="ring-controls" role="group" aria-label="project ring controls">
     <button class="ring-btn" id="ringPrev" aria-label="previous project">‹</button>
+    <button class="ring-btn ring-dot" aria-label="open about card">✩</button>
     <button class="ring-btn ring-dot" aria-label="open project 01">01</button>
     <button class="ring-btn ring-dot" aria-label="open project 02">02</button>
     <button class="ring-btn ring-dot" aria-label="open project 03">03</button>
@@ -157,10 +187,10 @@
   <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="sound off — click to play" title="toggle sound" data-no-glitch><span class="snd-icon">♫</span><span class="snd-dot">◌</span></button>
 
   <!-- Interactive Scripts -->
-  <script defer src="scripts/lightswitch.js?v=1032"></script>
-  <script defer src="scripts/sparkles.js?v=1032"></script>
-  <script defer src="scripts/glitch.js?v=1032"></script>
-  <script defer src="scripts/sound.js?v=1032"></script>
-  <script defer src="scripts/ring.js?v=1032"></script>
+  <script defer src="scripts/lightswitch.js?v=1033"></script>
+  <script defer src="scripts/sparkles.js?v=1033"></script>
+  <script defer src="scripts/glitch.js?v=1033"></script>
+  <script defer src="scripts/sound.js?v=1033"></script>
+  <script defer src="scripts/ring.js?v=1033"></script>
 </body>
 </html>
