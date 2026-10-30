@@ -20,7 +20,6 @@
     el.style.top = rand(1, 96) + 'vh';
     el.style.fontSize = (isCluster ? rand(9, 12) : rand(9, 18)).toFixed(1) + 'px';
     el.style.setProperty('--peak', rand(0.25, 0.8).toFixed(2));
-    el.style.animationDuration = rand(5, 11).toFixed(2) + 's';
   }
 
   function build() {
@@ -37,6 +36,9 @@
     for (let i = 0; i < count; i++) {
       const s = document.createElement('span');
       reroll(s);
+      // each sparkle keeps one slow duration for good. (changing it every cycle made
+      // some of them jump straight to full brightness — that was the fast flicker)
+      s.style.animationDuration = rand(7, 13).toFixed(2) + 's';
       // stagger so they don't all pulse together on load
       s.style.animationDelay = (-rand(0, 10)).toFixed(2) + 's';
       // each time a sparkle finishes fading out, it reappears somewhere new

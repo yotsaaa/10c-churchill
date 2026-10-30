@@ -14,7 +14,7 @@
   const BURST_CHANCE = 0.06;     // small chance 2–3 neighbouring characters flicker together
 
   const SKIP = 'script, style, noscript, textarea, input, select, model-viewer, ' +
-               '#ascii-loader-root, .sparkle-field, [data-no-glitch]';
+               '#ascii-loader-root, .sparkle-field, .card-back, [data-no-glitch]';
 
   const rand = (a, b) => a + Math.random() * (b - a);
   const pick = (s) => s[Math.floor(Math.random() * s.length)];
