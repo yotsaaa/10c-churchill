@@ -49,6 +49,20 @@
   let introEnd = null;           // set once the loading screen has gone
   if (!reduceMotion) flipMix = 1;
   const introHolding = (now) => introEnd === null || now < introEnd;
+
+  // idle "screensaver": after IDLE_MS with no mouse / key / touch activity, every card
+  // turns round to its ascii back; any activity turns them back to the front.
+  // (not while a card is open or a video is playing with sound — someone's watching)
+  const IDLE_MS = 60000;
+  let lastActivity = performance.now(), idleOn = false, wokeAt = 0;
+  function onActivity() {
+    lastActivity = performance.now();
+    if (idleOn) { idleOn = false; wokeAt = lastActivity; }
+  }
+  ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach((t) =>
+    window.addEventListener(t, onActivity, { passive: true, capture: true }));
+  const watchingVideo = () => Array.from(document.querySelectorAll('video'))
+    .some((v) => !v.paused && !v.muted && !v.ended);
   const FLIP_EASE = 0.07;        // how fast the cards turn round for the ꩜ toggle
   let fadeMix = 0;
 
@@ -107,7 +121,8 @@
     const R = radius();
     const t = (now - start) / 1000;
     if (introEnd === null && !loaderUp()) introEnd = now + (reduceMotion ? 0 : INTRO_BACKS_MS);
-    const flipTarget = backsOn || (!reduceMotion && introHolding(now)) ? 1 : 0;
+    if (!idleOn && !reduceMotion && focused < 0 && introEnd !== null && now - lastActivity > IDLE_MS && !watchingVideo()) idleOn = true;
+    const flipTarget = backsOn || idleOn || (!reduceMotion && introHolding(now)) ? 1 : 0;
     flipMix += (flipTarget - flipMix) * (reduceMotion ? 1 : FLIP_EASE);
     const anyOpen = focused >= 0 ? 1 : 0;
     fadeMix += (anyOpen - fadeMix) * (reduceMotion ? 1 : anyOpen ? OPEN_EASE : CLOSE_EASE);
@@ -287,6 +302,7 @@
       return;
     }
 
+    if (wasDragging && isClick && performance.now() - wokeAt < 400) return;   // that click just woke it up
     if (wasDragging && isClick) {
       velocity = 0;
       // pointer capture means e.target is the stage, so find what's under the pointer
