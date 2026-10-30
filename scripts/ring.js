@@ -26,7 +26,7 @@
   const AUTO_ADVANCE_MS = 6500; // idle time before it spins to the next project
 
   // ---- state --------------------------------------------------------------
-  let angle = reduceMotion ? 0 : 250; // starts spun round, settles in on load
+  let angle = 0;                // start facing the first card (the about card)
   let velocity = 0;
   let target = 0;               // the angle we settle on
   let focused = -1;
