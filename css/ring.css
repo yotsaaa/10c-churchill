@@ -443,3 +443,21 @@ html.ring-page body {
 .extra-item:focus { outline: none; }
 .extra-item:focus-visible { outline: 1px solid var(--pink-soft); outline-offset: 2px; }
 .ring-card .extra-viewer img { max-height: 42vh; margin: 0; }
+
+/* project 03 preview video inside the teaser screen */
+.tease-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  image-rendering: pixelated;   /* keep the low-res clip crunchy instead of blurry */
+}
+.tease-screen.has-video .tease-center span { background: rgba(0, 0, 0, 0.45); }
+/* opened: hide the overlay and show the normal video controls */
+.ring-card.focused .tease-screen.has-video::after,
+.ring-card.focused .tease-screen.has-video .tease-top,
+.ring-card.focused .tease-screen.has-video .tease-center,
+.ring-card.focused .tease-screen.has-video .tease-bottom { display: none; }
+.ring-card:not(.focused) .tease-video { pointer-events: none; }

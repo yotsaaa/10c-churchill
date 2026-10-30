@@ -15,6 +15,7 @@
   const FPS = 12;
 
   function fill(pre) {
+    if (!pre) return;               // screens showing a real video have no static
     const box = pre.getBoundingClientRect();
     const cols = Math.max(10, Math.ceil(box.width / 6) + 2);
     const rows = Math.max(5, Math.ceil(box.height / 10) + 1);
@@ -48,6 +49,19 @@
       if (tc) tc.textContent = timecode();
     });
   }
+
+  // project 03 preview video: silent loop while floating; controls + sound once opened
+  document.querySelectorAll('.tease-video').forEach((v) => {
+    const card = v.closest('.ring-card');
+    if (!card) return;
+    const sync = () => {
+      const open = card.classList.contains('focused');
+      v.controls = open;
+      if (!open) { v.muted = true; if (v.paused) v.play().catch(() => {}); }
+    };
+    new MutationObserver(sync).observe(card, { attributes: true, attributeFilter: ['class'] });
+    sync();
+  });
 
   if (reduceMotion) {
     screens.forEach((s) => fill(s.querySelector('.tease-noise')));

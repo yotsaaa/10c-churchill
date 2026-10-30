@@ -16,16 +16,16 @@
   <meta name="description" content="personal digital art and coursework archive for 10c fall 2026 by natalie churchill" />
 
   <!-- Fonts & Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=1040" />
-  <link rel="stylesheet" href="css/ascii-loader.css?v=1040" />
-  <link rel="stylesheet" href="css/sparkles.css?v=1040" />
-  <link rel="stylesheet" href="css/ring.css?v=1040" />
+  <link rel="stylesheet" href="css/style.css?v=1041" />
+  <link rel="stylesheet" href="css/ascii-loader.css?v=1041" />
+  <link rel="stylesheet" href="css/sparkles.css?v=1041" />
+  <link rel="stylesheet" href="css/ring.css?v=1041" />
 
   <!-- 3D Model Viewer Component -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
   <!-- ASCII Load-in Animation Engine -->
-  <script defer src="scripts/ascii-loader.js?v=1040"></script>
+  <script defer src="scripts/ascii-loader.js?v=1041"></script>
 </head>
 
 <body>
@@ -152,8 +152,10 @@
       <article class="ring-card artwork-box locked-project" id="project-03" data-index="3">
         <h3>⋆*✩ project 03: [video // coming soon] ✩*⋆</h3>
         <p class="card-prompt" style="color:#aaa;">video project · in production</p>
-        <div class="card-media tease-screen" data-no-glitch role="img" aria-label="project 03 video teaser — coming soon">
-          <pre class="tease-noise" aria-hidden="true"></pre>
+        <div class="card-media tease-screen has-video" data-no-glitch>
+          <!-- project 03 preview video (Images/p3 placeholder.mp4) — swap the src for the final video later -->
+          <video class="tease-video" src="Images/p3%20placeholder.mp4" poster="Images/extra/p3-placeholder-poster.jpg"
+                 autoplay muted loop playsinline preload="auto" aria-label="project 03 preview video"></video>
           <div class="tease-top"><span class="tease-rec">● rec</span><span class="tease-tc">00:00:00:00</span></div>
           <div class="tease-center"><span>▶ coming soon</span></div>
           <div class="tease-bottom"><span>p03 // video</span><span>f26</span></div>
@@ -168,7 +170,7 @@
           <span>semester: fall 2026</span>
           <span>status: in production (03 / 03)</span>
         </div>
-        <div class="card-open-hint">[ click to open · teaser ]</div>
+        <div class="card-open-hint">[ click to open · watch with sound ]</div>
       </article>
 
       <!-- Additional work: a little gallery.
@@ -207,6 +209,9 @@
           <button class="extra-item" data-type="video" data-src="Images/extra/igpostwaudio.mp4" data-poster="Images/extra/igpostwaudio-poster.jpg" data-title="instagram post (with audio)" data-note="">
             <img src="Images/extra/igpostwaudio-poster.jpg" alt="instagram post (with audio)" loading="lazy" draggable="false" /><span class="extra-badge">▶</span>
           </button>
+          <button class="extra-item" data-type="video" data-src="Images/extra/td-exploration-2026.mp4" data-poster="Images/extra/td-exploration-2026-poster.jpg" data-title="touchdesigner exploration 2026" data-note="Touch Designer + MediaPipe exploration 2026">
+            <img src="Images/extra/td-exploration-2026-poster.jpg" alt="touchdesigner exploration 2026" loading="lazy" draggable="false" /><span class="extra-badge">▶</span>
+          </button>
         </div>
 
         <div class="artwork-meta">
@@ -241,12 +246,12 @@
   <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="sound off — click to play" title="toggle sound" data-no-glitch><span class="snd-icon">♫</span><span class="snd-dot">◌</span></button>
 
   <!-- Interactive Scripts -->
-  <script defer src="scripts/lightswitch.js?v=1040"></script>
-  <script defer src="scripts/sparkles.js?v=1040"></script>
-  <script defer src="scripts/glitch.js?v=1040"></script>
-  <script defer src="scripts/sound.js?v=1040"></script>
-  <script defer src="scripts/ring.js?v=1040"></script>
-  <script defer src="scripts/teaser.js?v=1040"></script>
-  <script defer src="scripts/extra.js?v=1040"></script>
+  <script defer src="scripts/lightswitch.js?v=1041"></script>
+  <script defer src="scripts/sparkles.js?v=1041"></script>
+  <script defer src="scripts/glitch.js?v=1041"></script>
+  <script defer src="scripts/sound.js?v=1041"></script>
+  <script defer src="scripts/ring.js?v=1041"></script>
+  <script defer src="scripts/teaser.js?v=1041"></script>
+  <script defer src="scripts/extra.js?v=1041"></script>
 </body>
 </html>
