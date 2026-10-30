@@ -23,7 +23,7 @@
   const TILT_X = 2.5, TILT_Y = 4; // max cursor tilt in degrees (subtle)
   const TILT_EASE = 0.025;        // how lazily the tilt follows the cursor (smaller = slower)
   const FACE = 0.32;            // how much side cards turn away (0 = always face you)
-  const AUTO_ADVANCE_MS = 6500; // idle time before it spins to the next project
+  const AUTO_ADVANCE_MS = 0;    // idle time before it spins to the next card (0 = never; it stays where you left it)
 
   // ---- state --------------------------------------------------------------
   let angle = 0;                // start facing the first card (the about card)
@@ -85,7 +85,7 @@
     }
 
     // idle auto-advance (not while a card is open)
-    if (!reduceMotion && focused < 0 && !dragging && now - lastInteraction > AUTO_ADVANCE_MS) {
+    if (AUTO_ADVANCE_MS > 0 && !reduceMotion && focused < 0 && !dragging && now - lastInteraction > AUTO_ADVANCE_MS) {
       target -= STEP;
       lastInteraction = now;
     }
