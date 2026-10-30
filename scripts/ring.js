@@ -43,6 +43,12 @@
   const CLOSE_EASE = 0.06;
   const openMix = cards.map(() => 0);
   let backsOn = false, flipMix = 0;
+  // intro: cards start turned round (showing their ascii backs) and flip to the
+  // front INTRO_BACKS_MS after the loading screen is gone, then the text unscrambles
+  const INTRO_BACKS_MS = 1500;
+  let introEnd = null;           // set once the loading screen has gone
+  if (!reduceMotion) flipMix = 1;
+  const introHolding = (now) => introEnd === null || now < introEnd;
   const FLIP_EASE = 0.07;        // how fast the cards turn round for the ꩜ toggle
   let fadeMix = 0;
 
@@ -100,7 +106,9 @@
 
     const R = radius();
     const t = (now - start) / 1000;
-    flipMix += ((backsOn ? 1 : 0) - flipMix) * (reduceMotion ? 1 : FLIP_EASE);
+    if (introEnd === null && !loaderUp()) introEnd = now + (reduceMotion ? 0 : INTRO_BACKS_MS);
+    const flipTarget = backsOn || (!reduceMotion && introHolding(now)) ? 1 : 0;
+    flipMix += (flipTarget - flipMix) * (reduceMotion ? 1 : FLIP_EASE);
     const anyOpen = focused >= 0 ? 1 : 0;
     fadeMix += (anyOpen - fadeMix) * (reduceMotion ? 1 : anyOpen ? OPEN_EASE : CLOSE_EASE);
 
@@ -396,7 +404,8 @@
 
   function updateCardText(now) {
     if (reduceMotion) return;
-    const featured = loaderUp() ? -1 : (focused >= 0 ? focused : ((Math.round(-angle / STEP) % N) + N) % N);
+    // nothing unscrambles until the intro flip has turned the cards to face you
+    const featured = (loaderUp() || introHolding(now - 450)) ? -1 : (focused >= 0 ? focused : ((Math.round(-angle / STEP) % N) + N) % N);
     cardText.forEach((ct, i) => {
       if (i === featured && !ct.readable) { ct.readable = true; ct.revealAt = now; ct.done = false; }
       if (i !== featured && ct.readable) { ct.readable = false; ct.lastShuffle = 0; setScrambled(ct, true); }
