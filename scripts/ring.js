@@ -45,7 +45,7 @@
   let backsOn = false, flipMix = 0;
   // intro: cards start turned round (showing their ascii backs) and flip to the
   // front INTRO_BACKS_MS after the loading screen is gone, then the text unscrambles
-  const INTRO_BACKS_MS = 1500;
+  const INTRO_BACKS_MS = 500;
   let introEnd = null;           // set once the loading screen has gone
   if (!reduceMotion) flipMix = 1;
   const introHolding = (now) => introEnd === null || now < introEnd;
