@@ -37,7 +37,6 @@
   items.forEach((item) => item.addEventListener('click', (e) => {
     e.stopPropagation();
     show(item);
-    if (window.siteClick) window.siteClick();
   }));
 
   // stop any playing video when the card is closed

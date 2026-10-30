@@ -42,8 +42,6 @@
   const CLOSE_EASE = 0.06;
   const openMix = cards.map(() => 0);
   let fadeMix = 0;
-  let lastPassing = 0;
-  const click = () => { if (window.siteClick) window.siteClick(); };
 
   // ---- card backs: symbol pattern + card number, shown when a card faces away
   const BACK_GLYPHS = ['✦', '·', '⋆', '˚', '✧', '·', '∴', '·', '◇', '·'];
@@ -156,12 +154,6 @@
     const front = focused >= 0 ? focused : frontIndex();
     dots.forEach((d, i) => d.classList.toggle('active', i === front));
 
-    // little click each time a new card passes the front while spinning by hand
-    const passing = ((Math.round(-angle / STEP) % N) + N) % N;
-    if (passing !== lastPassing) {
-      if (focused < 0 && (dragging || Math.abs(velocity) > 0.05)) click();
-      lastPassing = passing;
-    }
 
     requestAnimationFrame(frame);
   }
@@ -172,13 +164,11 @@
     target = want + Math.round((angle - want) / 360) * 360;
     velocity = 0;
     lastInteraction = performance.now();
-    click();
   }
 
   // ---- open / close -------------------------------------------------------
   function openCard(i, { updateHash = true } = {}) {
     if (i < 0 || i >= N) return;
-    if (focused !== i) click();
     focused = i;
     // turn the ring the short way so this card ends up in front
     const want = -i * STEP;
@@ -196,7 +186,6 @@
     if (focused < 0) return;
     cards[focused].classList.remove('focused');
     focused = -1;
-    click();
     stage.classList.remove('is-focused');
     history.replaceState(null, '', location.pathname);
     lastInteraction = performance.now();
@@ -234,8 +223,9 @@
   stage.addEventListener('pointermove', (e) => {
     // tilt follows the cursor (mouse/pen only — not fingers)
     if (e.pointerType !== 'touch') {
-      tiltTarget.x = -((e.clientY / innerHeight) - 0.5) * 2 * TILT_X;
-      tiltTarget.y = ((e.clientX / innerWidth) - 0.5) * 2 * TILT_Y;
+      // the side of the ring nearest the cursor leans toward it
+      tiltTarget.x = ((e.clientY / innerHeight) - 0.5) * 2 * TILT_X;
+      tiltTarget.y = -((e.clientX / innerWidth) - 0.5) * 2 * TILT_Y;
     }
     if (!dragging) return;
     const dx = e.clientX - lastX;
@@ -286,11 +276,11 @@
   // ---- buttons & keys -----------------------------------------------------
   document.getElementById('ringPrev')?.addEventListener('click', () => {
     if (focused >= 0) return openCard((focused - 1 + N) % N);
-    target += STEP; lastInteraction = performance.now(); click();
+    target += STEP; lastInteraction = performance.now();
   });
   document.getElementById('ringNext')?.addEventListener('click', () => {
     if (focused >= 0) return openCard((focused + 1) % N);
-    target -= STEP; lastInteraction = performance.now(); click();
+    target -= STEP; lastInteraction = performance.now();
   });
   dots.forEach((d, i) => d.addEventListener('click', () => openCard(i)));
   closeBtn?.addEventListener('click', closeCard);
