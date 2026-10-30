@@ -545,3 +545,6 @@ html.ring-page body {
 }
 .scr-on > .scr-layer,
 .scr-on > .scr-layer * { -webkit-text-fill-color: currentColor; }
+
+/* ꩜ card-backs toggle — sits just left of the ♫ sound toggle */
+.sound-toggle.backs-toggle { right: 64px; }

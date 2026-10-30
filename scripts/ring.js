@@ -42,6 +42,8 @@
   const OPEN_EASE = 0.12;
   const CLOSE_EASE = 0.06;
   const openMix = cards.map(() => 0);
+  let backsOn = false, flipMix = 0;
+  const FLIP_EASE = 0.07;        // how fast the cards turn round for the ꩜ toggle
   let fadeMix = 0;
 
   // ---- card backs: symbol pattern + card number, shown when a card faces away
@@ -98,6 +100,7 @@
 
     const R = radius();
     const t = (now - start) / 1000;
+    flipMix += ((backsOn ? 1 : 0) - flipMix) * (reduceMotion ? 1 : FLIP_EASE);
     const anyOpen = focused >= 0 ? 1 : 0;
     fadeMix += (anyOpen - fadeMix) * (reduceMotion ? 1 : anyOpen ? OPEN_EASE : CLOSE_EASE);
 
@@ -116,6 +119,10 @@
       const abs = Math.abs(a);
       let rotY = abs <= 90 ? a * FACE
         : Math.sign(a) * (90 * FACE + ((abs - 90) / 90) * (180 - 90 * FACE));
+      // ꩜ toggle: every card that's facing you turns round to show its ascii back
+      if (flipMix > 0.001 && Math.cos((rotY * Math.PI) / 180) >= 0) {
+        rotY += (a >= 0 ? 1 : -1) * 180 * flipMix;
+      }
       let opacity = 1 - depth * 0.4;
       let bright = 1 - depth * 0.3;
 
@@ -161,6 +168,21 @@
 
     requestAnimationFrame(frame);
   }
+
+  // ---- ꩜ toggle: flip every card round to show off its ascii back ------------
+  const backsBtn = document.getElementById('backs-toggle');
+  function setBacks(on) {
+    backsOn = on;
+    if (on && focused >= 0) closeCard();
+    if (backsBtn) {
+      backsBtn.classList.toggle('playing', on);
+      backsBtn.setAttribute('aria-pressed', String(on));
+      const dot = backsBtn.querySelector('.snd-dot');
+      if (dot) dot.textContent = on ? '●' : '◌';
+      backsBtn.setAttribute('aria-label', on ? 'showing card backs — click to flip back' : 'flip cards to show their ascii backs');
+    }
+  }
+  if (backsBtn) backsBtn.addEventListener('click', (e) => { e.stopPropagation(); setBacks(!backsOn); });
 
   // ---- spin a card round to the front (the short way) ----------------------
   function spinTo(i) {
@@ -264,6 +286,7 @@
       const card = hit && hit.closest('.ring-card');
       target = Math.round(angle / STEP) * STEP;
       const idx = card && !hit.closest('a, button') ? cards.indexOf(card) : -1;
+      if (idx >= 0 && backsOn) { setBacks(false); if (idx !== frontIndex()) spinTo(idx); return; }
       if (idx >= 0) {
         // front card opens; any other card spins round to the front first
         if (idx === frontIndex()) openCard(idx);
