@@ -1,0 +1,49 @@
+/**
+ * natalie churchill — 10c f26
+ * additional work card: once the card is open, click a thumbnail to show it
+ * big. works with images (data-type="image") and videos (data-type="video").
+ */
+
+(function () {
+  const card = document.getElementById('extra');
+  if (!card) return;
+  const items = Array.from(card.querySelectorAll('.extra-item'));
+  const viewer = card.querySelector('.extra-viewer');
+  const img = viewer && viewer.querySelector('img');
+  const video = viewer && viewer.querySelector('video');
+  const title = card.querySelector('.extra-title');
+  const note = card.querySelector('.extra-note');
+  if (!items.length || !viewer) return;
+
+  function show(item) {
+    items.forEach((it) => it.classList.toggle('active', it === item));
+    const type = item.dataset.type || 'image';
+    viewer.dataset.type = type;
+    if (type === 'video') {
+      if (video.getAttribute('src') !== item.dataset.src) {
+        video.pause();
+        video.setAttribute('poster', item.dataset.poster || '');
+        video.setAttribute('src', item.dataset.src);
+      }
+    } else {
+      video.pause();
+      img.src = item.dataset.src;
+      img.alt = item.dataset.title || '';
+    }
+    title.textContent = item.dataset.title || '';
+    note.textContent = item.dataset.note || '';
+  }
+
+  items.forEach((item) => item.addEventListener('click', (e) => {
+    e.stopPropagation();
+    show(item);
+    if (window.siteClick) window.siteClick();
+  }));
+
+  // stop any playing video when the card is closed
+  new MutationObserver(() => {
+    if (!card.classList.contains('focused') && video) video.pause();
+  }).observe(card, { attributes: true, attributeFilter: ['class'] });
+
+  show(items[0]);
+})();

@@ -16,16 +16,16 @@
   <meta name="description" content="personal digital art and coursework archive for 10c fall 2026 by natalie churchill" />
 
   <!-- Fonts & Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=1038" />
-  <link rel="stylesheet" href="css/ascii-loader.css?v=1038" />
-  <link rel="stylesheet" href="css/sparkles.css?v=1038" />
-  <link rel="stylesheet" href="css/ring.css?v=1038" />
+  <link rel="stylesheet" href="css/style.css?v=1039" />
+  <link rel="stylesheet" href="css/ascii-loader.css?v=1039" />
+  <link rel="stylesheet" href="css/sparkles.css?v=1039" />
+  <link rel="stylesheet" href="css/ring.css?v=1039" />
 
   <!-- 3D Model Viewer Component -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
   <!-- ASCII Load-in Animation Engine -->
-  <script defer src="scripts/ascii-loader.js?v=1038"></script>
+  <script defer src="scripts/ascii-loader.js?v=1039"></script>
 </head>
 
 <body>
@@ -49,6 +49,7 @@
       <a href="p1.html" style="padding-left: 14px; font-size: 10.5px;">↳ ⋆*✩ final pdf document ↗</a>
       <a href="#project-02">♡ project 02: quasi-object <i>[in progress]</i></a>
       <a href="#project-03">♡ project 03 <i>[locked]</i></a>
+      <a href="#extra">♡ additional work</a>
       <br>
       <span style="color: var(--pink-soft);">outlinks:</span><br>
       <a href="https://github.com/yotsaaa/10c-churchill" target="_blank">github repo ↗</a>
@@ -170,6 +171,56 @@
         <div class="card-open-hint">[ click to open · teaser ]</div>
       </article>
 
+      <!-- Additional work: a little gallery.
+           to add a piece: copy one <button class="extra-item"> … </button> block below and change
+           the paths, title and note. images: data-type="image". videos: data-type="video",
+           plus data-poster (a still image used as the thumbnail). keep videos as small .mp4s
+           (github won't take files over 100 mb). -->
+      <article class="ring-card artwork-box extra-card" id="extra">
+        <h3>⋆*✩ additional work ✩*⋆</h3>
+        <p class="card-prompt">stuff i&rsquo;ve worked on outside of class this semester</p>
+
+        <div class="card-extra"><div>
+          <figure class="extra-viewer">
+            <img alt="" draggable="false" />
+            <video controls playsinline preload="none"></video>
+            <figcaption><b class="extra-title"></b><span class="extra-note"></span></figcaption>
+          </figure>
+        </div></div>
+
+        <div class="extra-grid">
+          <button class="extra-item" data-type="image" data-src="Images/p1 draft.png" data-title="uncanny valley — early draft" data-note="first collage pass for project 01, before the final edit.">
+            <img src="Images/p1 draft.png" alt="uncanny valley — early draft" loading="lazy" draggable="false" />
+          </button>
+          <button class="extra-item" data-type="video" data-src="Images/extra/screenrecording-0929.mp4" data-poster="Images/extra/screenrecording-0929-poster.jpg" data-title="live visuals" data-note="visuals on stage, sept 2026.">
+            <img src="Images/extra/screenrecording-0929-poster.jpg" alt="live visuals" loading="lazy" draggable="false" /><span class="extra-badge">▶</span>
+          </button>
+          <button class="extra-item" data-type="image" data-src="Images/extra/IMG_4902.jpg" data-title="visuals credit — spotify story" data-note="">
+            <img src="Images/extra/IMG_4902.jpg" alt="visuals credit — spotify story" loading="lazy" draggable="false" />
+          </button>
+          <button class="extra-item" data-type="image" data-src="Images/extra/IMG_4903.jpg" data-title="visuals credit — spotify story (2)" data-note="">
+            <img src="Images/extra/IMG_4903.jpg" alt="visuals credit — spotify story (2)" loading="lazy" draggable="false" />
+          </button>
+          <button class="extra-item" data-type="video" data-src="Images/extra/out1demo.mp4" data-poster="Images/extra/out1demo-poster.jpg" data-title="out1 — demo" data-note="">
+            <img src="Images/extra/out1demo-poster.jpg" alt="out1 — demo" loading="lazy" draggable="false" /><span class="extra-badge">▶</span>
+          </button>
+          <button class="extra-item" data-type="video" data-src="Images/extra/IMG_3312.mp4" data-poster="Images/extra/IMG_3312-poster.jpg" data-title="patch in progress" data-note="">
+            <img src="Images/extra/IMG_3312-poster.jpg" alt="patch in progress" loading="lazy" draggable="false" /><span class="extra-badge">▶</span>
+          </button>
+          <button class="extra-item" data-type="video" data-src="Images/extra/igpostwaudio.mp4" data-poster="Images/extra/igpostwaudio-poster.jpg" data-title="instagram post (with audio)" data-note="">
+            <img src="Images/extra/igpostwaudio-poster.jpg" alt="instagram post (with audio)" loading="lazy" draggable="false" /><span class="extra-badge">▶</span>
+          </button>
+        </div>
+
+        <div class="artwork-meta">
+          <span>misc. work</span>
+          <span>fall 2026</span>
+          <span>ongoing</span>
+        </div>
+        <div class="card-open-hint">[ click to open · then pick a piece ]</div>
+      </article>
+
+
     </div>
   </main>
 
@@ -181,6 +232,7 @@
     <button class="ring-btn ring-dot" aria-label="open project 01">01</button>
     <button class="ring-btn ring-dot" aria-label="open project 02">02</button>
     <button class="ring-btn ring-dot" aria-label="open project 03">03</button>
+    <button class="ring-btn ring-dot" aria-label="open additional work">+</button>
     <button class="ring-btn" id="ringNext" aria-label="next project">›</button>
   </div>
 
@@ -192,11 +244,12 @@
   <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="sound off — click to play" title="toggle sound" data-no-glitch><span class="snd-icon">♫</span><span class="snd-dot">◌</span></button>
 
   <!-- Interactive Scripts -->
-  <script defer src="scripts/lightswitch.js?v=1038"></script>
-  <script defer src="scripts/sparkles.js?v=1038"></script>
-  <script defer src="scripts/glitch.js?v=1038"></script>
-  <script defer src="scripts/sound.js?v=1038"></script>
-  <script defer src="scripts/ring.js?v=1038"></script>
-  <script defer src="scripts/teaser.js?v=1038"></script>
+  <script defer src="scripts/lightswitch.js?v=1039"></script>
+  <script defer src="scripts/sparkles.js?v=1039"></script>
+  <script defer src="scripts/glitch.js?v=1039"></script>
+  <script defer src="scripts/sound.js?v=1039"></script>
+  <script defer src="scripts/ring.js?v=1039"></script>
+  <script defer src="scripts/teaser.js?v=1039"></script>
+  <script defer src="scripts/extra.js?v=1039"></script>
 </body>
 </html>
