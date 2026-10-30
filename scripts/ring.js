@@ -286,7 +286,12 @@
     if (focused >= 0) return openCard((focused + 1) % N);
     target -= STEP; lastInteraction = performance.now();
   });
-  dots.forEach((d, i) => d.addEventListener('click', () => openCard(i)));
+  // bottom buttons just spin to that card (click the card itself to open it).
+  // if a card is open, it closes first.
+  dots.forEach((d, i) => d.addEventListener('click', () => {
+    if (focused >= 0) closeCard();
+    spinTo(i);
+  }));
   closeBtn?.addEventListener('click', closeCard);
 
   window.addEventListener('keydown', (e) => {
@@ -329,79 +334,60 @@
   const scramble = (str) => str.replace(/\S/g, (ch) =>
     NARROW_IN.includes(ch) ? pickFrom(NARROW) : WIDE_IN.includes(ch) ? pickFrom(WIDE) : pickFrom(MID));
 
+  // the real text always stays in the page (made invisible while scrambled), so the
+  // layout never moves. the symbols are drawn in a copy laid exactly on top of it.
+  const BLOCKS = 'h3, .card-prompt, .about-body p, .artwork-meta span, .card-open-hint';
   const cardText = cards.map((card) => {
+    const blocks = [];
+    card.querySelectorAll(BLOCKS).forEach((el) => {
+      if (el.closest('.card-back, .card-extra, .tease-screen')) return;
+      if (!/\S/.test(el.textContent)) return;
+      const layer = document.createElement('span');
+      layer.className = 'scr-layer';
+      layer.setAttribute('aria-hidden', 'true');
+      el.childNodes.forEach((c) => layer.appendChild(c.cloneNode(true)));
+      layer.style.color = getComputedStyle(el).color;
+      el.classList.add('scr-host');
+      el.appendChild(layer);
+      blocks.push({ el, layer });
+    });
+    // the layer's text, in reading order, for the top-to-bottom unscramble
     const nodes = [];
-    const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT, {
-      acceptNode(n) {
-        if (!/\S/.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
-        // leave out: patterned backs, opened-card extras, the p03 screen, live-updating bits
-        if (n.parentElement.closest('.card-back, .card-extra, .tease-screen, model-viewer, video')) return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
+    let total = 0;
+    blocks.forEach(({ layer }) => {
+      const walker = document.createTreeWalker(layer, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = walker.nextNode())) {
+        if (!/\S/.test(n.nodeValue)) continue;
+        nodes.push({ n, orig: n.nodeValue, start: total });
+        total += n.nodeValue.length;
       }
     });
-    let n, total = 0;
-    while ((n = walker.nextNode())) {
-      nodes.push({ n, orig: n.nodeValue, start: total });
-      total += n.nodeValue.length;
-    }
-    return { nodes, total: Math.max(1, total), readable: false, revealAt: 0, done: false, lastShuffle: 0 };
+    return { blocks, nodes, total: Math.max(1, total), readable: false, revealAt: 0, done: false, lastShuffle: 0 };
   });
 
-  // ---- keep each card the same size while its text is scrambled -------------
-  // scrambled symbols wrap a little differently from real words, which made cards
-  // jitter in height. so each card's height is measured with its real text and
-  // held there while it's scrambled or unscrambling.
-  const restore = (ct) => ct.nodes.forEach(({ n, orig }) => { if (n.isConnected) n.nodeValue = orig; });
-  const lockHeight = (i, h) => { cards[i].style.height = h + 'px'; };
-  const unlockHeight = (i) => { cards[i].style.height = ''; };
-
-  // measure every scrambled card with its real text (on load + whenever the window resizes)
-  function measureLocks() {
-    cardText.forEach((ct, i) => {
-      if (ct.readable && ct.done) return;           // readable cards size themselves
-      unlockHeight(i);
-      restore(ct);
-      const h = cards[i].offsetHeight;
-      lockHeight(i, h);
-      ct.lastShuffle = 0;                            // re-scramble on the next frame
-    });
-  }
-  if (document.readyState === 'complete') measureLocks();
-  else window.addEventListener('load', measureLocks);
-  let resizeTimer = null;
-  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(measureLocks, 150); });
+  const setScrambled = (ct, on) => ct.blocks.forEach(({ el }) => el.classList.toggle('scr-on', on));
+  cardText.forEach((ct) => setScrambled(ct, !reduceMotion));
 
   function updateCardText(now) {
     if (reduceMotion) return;
     const featured = loaderUp() ? -1 : (focused >= 0 ? focused : ((Math.round(-angle / STEP) % N) + N) % N);
     cardText.forEach((ct, i) => {
       if (i === featured && !ct.readable) { ct.readable = true; ct.revealAt = now; ct.done = false; }
-      if (cards[i].classList.contains('focused')) ct.lastFocused = now;
-      if (i !== featured && ct.readable) {
-        // leaving the front: measure its real height (after it finishes shrinking, if it was open)
-        ct.measureAt = now + (now - (ct.lastFocused || -1e9) < 1000 ? 950 : 0);
-        if (ct.done && ct.measureAt <= now) { lockHeight(i, cards[i].offsetHeight); ct.measureAt = 0; }
-        ct.readable = false; ct.lastShuffle = 0;
-      }
-      if (!ct.readable && ct.measureAt && now >= ct.measureAt) {
-        ct.measureAt = 0;
-        unlockHeight(i); restore(ct); lockHeight(i, cards[i].offsetHeight); ct.lastShuffle = 0;
-      }
-      cards[i].classList.toggle('is-scrambled', !ct.readable || !ct.done);
+      if (i !== featured && ct.readable) { ct.readable = false; ct.lastShuffle = 0; setScrambled(ct, true); }
 
       if (ct.readable) {
         if (ct.done) return;
         const p = Math.min(1, (now - ct.revealAt) / REVEAL_MS);
         const upto = p * ct.total;                       // characters revealed so far, in reading order
         ct.nodes.forEach(({ n, orig, start }) => {
-          if (!n.isConnected) return;
           const k = Math.max(0, Math.min(orig.length, Math.floor(upto - start)));
           n.nodeValue = k >= orig.length ? orig : orig.slice(0, k) + scramble(orig.slice(k));
         });
-        if (p >= 1) { ct.done = true; unlockHeight(i); cards[i].classList.remove('is-scrambled'); }
+        if (p >= 1) { ct.done = true; setScrambled(ct, false); }   // hand back to the real text
       } else if (now - ct.lastShuffle > RESCRAMBLE_MS) {
         ct.lastShuffle = now;
-        ct.nodes.forEach(({ n, orig }) => { if (n.isConnected) n.nodeValue = scramble(orig); });
+        ct.nodes.forEach(({ n, orig }) => { n.nodeValue = scramble(orig); });
       }
     });
   }

@@ -489,10 +489,7 @@ html.ring-page body {
 .ring-card .project-details { background: rgba(0, 0, 0, 0.22); }
 .ring-card .locked-frame { background: rgba(0, 0, 0, 0.15); }
 
-/* while a card's text is scrambled, keep the one-line prompt from wrapping (stops the card changing height) */
-.ring-card.is-scrambled .card-prompt { white-space: nowrap; overflow: hidden; }
-/* scrambled cards hold their real height (set in ring.js); clip any symbols that spill over */
-.ring-card.is-scrambled:not(.focused) { overflow: hidden; }
+
 
 /* --- ascii portrait backs (scripts/ascii-backs.js) --------------------- */
 .card-back .back-ascii {
@@ -526,3 +523,25 @@ html.ring-page body {
   border: 1px dotted var(--pink-main);
   padding: 2px 8px;
 }
+
+/* --- scrambled text overlay (scripts/ring.js) ----------------------------
+   the real words stay put but go invisible; the symbols sit on top in .scr-layer,
+   so nothing in the card moves while text scrambles / unscrambles. */
+.scr-host { position: relative; }
+.scr-layer { display: none; }
+.scr-on > .scr-layer {
+  display: block;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  white-space: inherit;
+}
+.scr-on,
+.scr-on :not(.scr-layer):not(.scr-layer *) {
+  color: transparent !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: transparent;
+}
+.scr-on > .scr-layer,
+.scr-on > .scr-layer * { -webkit-text-fill-color: currentColor; }
