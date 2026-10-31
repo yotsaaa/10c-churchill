@@ -6,6 +6,7 @@
  *   project 01      → the uncanny valley collage
  *   project 02      → a snapshot of the 3d model
  *   project 03      → the preview video, live, as moving ascii
+ *   in-class demos  → its looping preview video, live, the same way
  *   gallery cards   → their first four pieces as a 2×2 grid
  * everything is drawn once (except the live video), so it costs almost nothing.
  */
@@ -111,6 +112,12 @@
       // about card → the site icon
       if (card.classList.contains('about-card')) {
         attach(card, async () => [await loadImg('Images/siteIcon.png')], 'alpha');
+        return;
+      }
+      // in-class demos → its looping preview video, live (same as project 03)
+      const loop = card.querySelector('.loop-video');
+      if (loop) {
+        attach(card, async () => (loop.readyState >= 2 ? [loop] : []), null, true);
         return;
       }
       // gallery cards → first four thumbnails
