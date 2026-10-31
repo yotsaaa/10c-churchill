@@ -540,12 +540,17 @@ html.ring-page body {
 }
 .scr-on,
 .scr-on :not(.scr-layer):not(.scr-layer *) {
-  color: transparent !important;
+  /* hide the real words with text-fill only, so the element keeps its real color
+     and the symbol layer on top can simply inherit it (no snapshot taken at load) */
+  -webkit-text-fill-color: transparent !important;
+  text-decoration-color: transparent !important;
   text-shadow: none !important;
-  -webkit-text-fill-color: transparent;
 }
 .scr-on > .scr-layer,
-.scr-on > .scr-layer * { -webkit-text-fill-color: currentColor; }
+.scr-on > .scr-layer * {
+  -webkit-text-fill-color: currentColor !important;
+  text-decoration-color: currentColor !important;
+}
 
 /* ꩜ card-backs toggle — sits just left of the ♫ sound toggle */
 .sound-toggle.backs-toggle { right: 64px; }

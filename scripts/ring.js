@@ -403,7 +403,6 @@
       layer.className = 'scr-layer';
       layer.setAttribute('aria-hidden', 'true');
       el.childNodes.forEach((c) => layer.appendChild(c.cloneNode(true)));
-      layer.style.color = getComputedStyle(el).color;
       el.classList.add('scr-host');
       el.appendChild(layer);
       blocks.push({ el, layer });
