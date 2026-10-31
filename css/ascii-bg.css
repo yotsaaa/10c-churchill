@@ -1,0 +1,20 @@
+/* ascii video background (scripts/ascii-bg.js) — sits behind everything, never blocks clicks.
+   to remove: delete the two "ascii bg" lines in index.html */
+:root { --ascii-bg-opacity: 0.32; }
+.ascii-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  white-space: pre;
+  font-family: var(--font-pixel);
+  letter-spacing: 0;
+  color: var(--pink-main);
+  opacity: var(--ascii-bg-opacity);
+  /* fade toward the edges so the centre stays readable */
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, rgba(0,0,0,0.35) 100%);
+          mask-image: radial-gradient(ellipse at center, #000 35%, rgba(0,0,0,0.35) 100%);
+}
