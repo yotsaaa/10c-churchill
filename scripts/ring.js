@@ -151,7 +151,7 @@
       const flipWant = allBacks || i !== faceUp ? 1 : 0;
       flipMix[i] += (flipWant - flipMix[i]) * (reduceMotion ? 1 : FLIP_EASE);
       if (flipMix[i] > 0.001 && Math.cos((rotY * Math.PI) / 180) >= 0) {
-        rotY += (a >= 0 ? 1 : -1) * 180 * flipMix[i];
+        rotY += (a >= 0 ? -1 : 1) * 180 * flipMix[i];   // swap -1 / 1 to flip the other way
       }
       let opacity = 1 - depth * 0.4;
       let bright = 1 - depth * 0.3;
