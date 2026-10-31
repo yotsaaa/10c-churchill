@@ -568,3 +568,15 @@ html.is-idle .ring-close {
   opacity: 0 !important;
   pointer-events: none;
 }
+
+/* in-class demos: looping video while floating, gallery once opened */
+.loop-preview {
+  margin: 10px 0 4px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 166, 194, 0.25);
+  background: #000;
+  pointer-events: none;
+}
+.loop-video { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.ring-card.focused .loop-preview { display: none; }
+.ring-card.has-loop:not(.focused) .extra-grid { display: none; }
