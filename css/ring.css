@@ -552,3 +552,18 @@ html.ring-page body {
 /* while every card is turned round (꩜), skip the frosted blur — thousands of tiny
    ascii characters behind blurred glass is a lot for some browsers to draw */
 .backs-on .ring-card.artwork-box { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* --- idle: hide everything except the carousel ---------------------------
+   the header, buttons, menu, corner badge and toggles fade out; the ring stays.
+   any activity brings them back. */
+.ring-header, .ring-controls, .sweety { transition: opacity 0.8s ease; }
+.menu-toggle, .sound-toggle { transition: all 0.2s ease, opacity 0.8s ease; }
+html.is-idle .ring-header,
+html.is-idle .ring-controls,
+html.is-idle .menu-toggle,
+html.is-idle .sweety,
+html.is-idle .sound-toggle,
+html.is-idle .ring-close {
+  opacity: 0 !important;
+  pointer-events: none;
+}

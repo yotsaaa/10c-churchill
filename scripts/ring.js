@@ -53,7 +53,7 @@
   // idle "screensaver": after IDLE_MS with no mouse / key / touch activity, every card
   // turns round to its ascii back; any activity turns them back to the front.
   // (not while a card is open or a video is playing with sound — someone's watching)
-  const IDLE_MS = 20000;
+  const IDLE_MS = 12000;
   let lastActivity = performance.now(), idleOn = false, wokeAt = 0;
   function onActivity() {
     lastActivity = performance.now();
@@ -122,6 +122,8 @@
     const t = (now - start) / 1000;
     if (introEnd === null && !loaderUp()) introEnd = now + (reduceMotion ? 0 : INTRO_BACKS_MS);
     if (!idleOn && !reduceMotion && focused < 0 && introEnd !== null && now - lastActivity > IDLE_MS && !watchingVideo()) idleOn = true;
+    // while idle, everything except the ring fades away (see .is-idle in ring.css)
+    if (idleOn !== document.documentElement.classList.contains('is-idle')) document.documentElement.classList.toggle('is-idle', idleOn);
     const flipTarget = backsOn || idleOn || (!reduceMotion && introHolding(now)) ? 1 : 0;
     flipMix += (flipTarget - flipMix) * (reduceMotion ? 1 : FLIP_EASE);
     const anyOpen = focused >= 0 ? 1 : 0;
