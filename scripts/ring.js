@@ -44,6 +44,7 @@
   const openMix = cards.map(() => 0);
   // each card turns round on its own: only the card in front shows its face
   const flipMix = cards.map(() => 0);
+  let backsOn = false;           // ꩜ toggle: keep every card turned round, front one included
   // intro: cards start turned round (showing their ascii backs) and flip to the
   // front INTRO_BACKS_MS after the loading screen is gone, then the text unscrambles
   const INTRO_BACKS_MS = 1250;
@@ -127,7 +128,7 @@
     if (idleOn !== document.documentElement.classList.contains('is-idle')) document.documentElement.classList.toggle('is-idle', idleOn);
     // every card shows its ascii back except the one in front (or the one that's open);
     // while idle / during the intro, all of them stay turned round
-    const allBacks = idleOn || (!reduceMotion && introHolding(now));
+    const allBacks = backsOn || idleOn || (!reduceMotion && introHolding(now));
     const faceUp = focused >= 0 ? focused : frontIndex();
     const anyOpen = focused >= 0 ? 1 : 0;
     fadeMix += (anyOpen - fadeMix) * (reduceMotion ? 1 : anyOpen ? OPEN_EASE : CLOSE_EASE);
@@ -198,6 +199,22 @@
 
     requestAnimationFrame(frame);
   }
+
+  // ---- ꩜ toggle: keep every card turned round to its ascii back -------------
+  const backsBtn = document.getElementById('backs-toggle');
+  function setBacks(on) {
+    backsOn = on;
+    document.documentElement.classList.toggle('backs-on', on);
+    if (on && focused >= 0) closeCard();
+    if (backsBtn) {
+      backsBtn.classList.toggle('playing', on);
+      backsBtn.setAttribute('aria-pressed', String(on));
+      const dot = backsBtn.querySelector('.snd-dot');
+      if (dot) dot.textContent = on ? '●' : '◌';
+      backsBtn.setAttribute('aria-label', on ? 'showing card backs — click to flip back' : 'flip cards to show their ascii backs');
+    }
+  }
+  if (backsBtn) backsBtn.addEventListener('click', (e) => { e.stopPropagation(); setBacks(!backsOn); });
 
   // ---- spin a card round to the front (the short way) ----------------------
   function spinTo(i) {
@@ -302,6 +319,8 @@
       const card = hit && hit.closest('.ring-card');
       target = Math.round(angle / STEP) * STEP;
       const idx = card && !hit.closest('a, button') ? cards.indexOf(card) : -1;
+      // while ꩜ is on, cards stay turned round: clicking one just spins it to the front
+      if (idx >= 0 && backsOn) { if (idx !== frontIndex()) spinTo(idx); return; }
       if (idx >= 0) {
         // front card opens; any other card spins round to the front first
         if (idx === frontIndex()) openCard(idx);

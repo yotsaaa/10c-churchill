@@ -547,6 +547,9 @@ html.ring-page body {
 .scr-on > .scr-layer,
 .scr-on > .scr-layer * { -webkit-text-fill-color: currentColor; }
 
+/* ꩜ card-backs toggle — sits just left of the ♫ sound toggle */
+.sound-toggle.backs-toggle { right: 64px; }
+
 /* cards showing their ascii backs skip the frosted blur — thousands of tiny
    ascii characters behind blurred glass is a lot for some browsers to draw */
 .ring-card.show-back.artwork-box { -webkit-backdrop-filter: none; backdrop-filter: none; }
