@@ -581,3 +581,7 @@ html.is-idle .ring-close {
 .ring-card.focused .loop-preview { display: none; }
 .ring-card.has-loop:not(.focused) .extra-grid { display: none; }
 
+
+/* hidden for now: the ☰ menu button (top right) and the title at the top.
+   delete this rule to bring them back */
+.menu-toggle, .ring-header h1 { display: none !important; }
