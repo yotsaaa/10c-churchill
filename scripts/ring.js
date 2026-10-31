@@ -299,8 +299,8 @@
       if (!isClick) return;
       const hit = document.elementFromPoint(e.clientX, e.clientY);
       const card = hit && hit.closest('.ring-card');
-      if (!card) closeCard();
-      else if (!card.classList.contains('focused')) openCard(cards.indexOf(card));
+      // anywhere that isn't the open card (including the faded cards behind it) goes back to the ring
+      if (!card || !card.classList.contains('focused')) closeCard();
       return;
     }
 

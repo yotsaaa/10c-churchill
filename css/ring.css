@@ -157,7 +157,8 @@ html.ring-page body {
 }
 .ring-card.focused .card-model model-viewer { height: min(420px, 48vh); }
 
-.ring-stage.is-focused .ring-card:not(.focused) { pointer-events: auto; }
+/* while a card is open, the faded cards behind it can't be clicked — clicks there close the open card */
+.ring-stage.is-focused .ring-card:not(.focused) { pointer-events: none; }
 
 /* --- controls ----------------------------------------------------------- */
 .ring-controls {
