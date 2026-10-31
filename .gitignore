@@ -6,3 +6,6 @@ Additional Works/
 # full-size demo screenshots — the site uses the smaller copies in Images/Demos/web/
 Images/Demos/*.png
 Images/Demos/*.PNG
+
+# original ProRes export (2.4 GB) — the site uses Images/extra/mgna-form-visuals-1.mp4
+Images/extra/*.mov
