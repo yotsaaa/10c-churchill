@@ -547,12 +547,9 @@ html.ring-page body {
 .scr-on > .scr-layer,
 .scr-on > .scr-layer * { -webkit-text-fill-color: currentColor; }
 
-/* ꩜ card-backs toggle — sits just left of the ♫ sound toggle */
-.sound-toggle.backs-toggle { right: 64px; }
-
-/* while every card is turned round (꩜), skip the frosted blur — thousands of tiny
+/* cards showing their ascii backs skip the frosted blur — thousands of tiny
    ascii characters behind blurred glass is a lot for some browsers to draw */
-.backs-on .ring-card.artwork-box { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ring-card.show-back.artwork-box { -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 /* --- idle: hide everything except the carousel ---------------------------
    the header, buttons, menu, corner badge and toggles fade out; the ring stays.
