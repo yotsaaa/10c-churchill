@@ -1,0 +1,11 @@
+/* falling particles off the card ring (scripts/particles.js).
+   sits above the background but below the cards (.ring-stage is z-index 1),
+   and never blocks clicks. to remove: delete the two "particles" lines in index.html */
+.particle-field {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
