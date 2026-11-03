@@ -4,7 +4,7 @@
  * card's own picture redrawn in text symbols.
  *   about card      → the site icon (rose vine)
  *   project 01      → the uncanny valley collage
- *   project 02      → a snapshot of the 3d model
+ *   project 02      → a face-on still of the blood blade 3d model
  *   project 03      → the preview video, live, as moving ascii
  *   in-class demos  → its looping preview video, live, the same way
  *   gallery cards   → their first four pieces as a 2×2 grid
@@ -132,23 +132,13 @@
         attach(card, async () => (video.readyState >= 2 ? [video] : []), null, true);
         return;
       }
-      // project 02 → snapshot of the 3d model once it has loaded (the poster image until then)
-      const mv = card.querySelector('model-viewer');
-      const img = card.querySelector('.card-media img');
-      if (mv) {
-        const fromModel = async () => {
-          try {
-            if (mv.loaded && mv.toDataURL) return [await loadImg(mv.toDataURL('image/png'))];
-          } catch (e) { /* fall through */ }
-          return img ? [await loadImg(img.getAttribute('src'))] : [];
-        };
-        attach(card, fromModel);
-        mv.addEventListener('load', () => setTimeout(() => {
-          const pre = card.querySelector('.back-ascii');
-          fromModel().then((s) => { if (s.length && pre) { pre.textContent = toAscii(card, s); pre.parentElement.classList.add('has-ascii'); } }).catch(() => {});
-        }, 900));
+      // project 02 → a still of the blood blade 3d model (Images/p2-blade-back.png),
+      // rendered face-on so the back always shows the full silhouette
+      if (card.id === 'project-02') {
+        attach(card, async () => [await loadImg('Images/p2-blade-back.png')]);
         return;
       }
+      const img = card.querySelector('.card-media img');
       // anything else with a picture (project 01)
       if (img) attach(card, async () => [await loadImg(img.getAttribute('src'))]);
     });
