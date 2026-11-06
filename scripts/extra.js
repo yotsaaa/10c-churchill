@@ -46,13 +46,14 @@ document.querySelectorAll('.extra-card').forEach(function (card) {
   show(items[0]);
 });
 
-// floating looping previews (in-class demos, project 02): play while the card floats,
-// pause while it's open (the gallery / 3d viewer takes over)
+// floating looping previews (in-class demos, project 02): play while the card floats.
+// once opened, the demos one pauses (the gallery takes over); videos marked
+// data-play-open (project 02) keep playing, shown big above the 3d model
 document.querySelectorAll('.ring-card').forEach(function (card) {
   const loop = card.querySelector('.loop-video');
   if (!loop) return;
   const syncLoop = () => {
-    if (card.classList.contains('focused')) loop.pause();
+    if (card.classList.contains('focused') && !loop.hasAttribute('data-play-open')) loop.pause();
     else { loop.muted = true; loop.play().catch(() => {}); }
   };
   new MutationObserver(syncLoop).observe(card, { attributes: true, attributeFilter: ['class'] });

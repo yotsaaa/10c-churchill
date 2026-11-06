@@ -588,6 +588,9 @@ html.is-idle .ring-close {
 /* project 02: looping video (16:9, uncropped) while floating, 3d viewer + project info once opened */
 .loop-video.wide { aspect-ratio: 16 / 9; }
 .ring-card.has-model.has-loop:not(.focused) .card-model { display: none; }
+/* opened: wider card, big video on top → 3d model → text */
+.ring-card.has-model.has-loop.focused { --card-w: min(780px, 94vw); }
+.ring-card.has-model.has-loop.focused .loop-preview { display: block; margin: 10px 0 6px; }
 
 
 /* hidden for now: the ☰ menu button (top right) and the title at the top.

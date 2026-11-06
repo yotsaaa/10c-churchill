@@ -638,6 +638,10 @@ model-viewer {
   color: #000;
 }
 
+/* a button that isn't linked yet (e.g. a final pdf still in progress) */
+.net-btn.is-soon { opacity: 0.55; cursor: default; text-decoration-style: dotted; }
+.net-btn.is-soon:hover { background: transparent; color: var(--pink-main); }
+
 #mood-text {
   color: var(--pink-blush);
   transition: filter 0.3s ease;
