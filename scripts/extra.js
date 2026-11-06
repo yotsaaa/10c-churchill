@@ -43,16 +43,18 @@ document.querySelectorAll('.extra-card').forEach(function (card) {
     if (!card.classList.contains('focused') && video) video.pause();
   }).observe(card, { attributes: true, attributeFilter: ['class'] });
 
-  // floating looping preview: plays while the card floats, pauses while the gallery is open
-  const loop = card.querySelector('.loop-video');
-  if (loop) {
-    const syncLoop = () => {
-      if (card.classList.contains('focused')) loop.pause();
-      else { loop.muted = true; loop.play().catch(() => {}); }
-    };
-    new MutationObserver(syncLoop).observe(card, { attributes: true, attributeFilter: ['class'] });
-    syncLoop();
-  }
-
   show(items[0]);
+});
+
+// floating looping previews (in-class demos, project 02): play while the card floats,
+// pause while it's open (the gallery / 3d viewer takes over)
+document.querySelectorAll('.ring-card').forEach(function (card) {
+  const loop = card.querySelector('.loop-video');
+  if (!loop) return;
+  const syncLoop = () => {
+    if (card.classList.contains('focused')) loop.pause();
+    else { loop.muted = true; loop.play().catch(() => {}); }
+  };
+  new MutationObserver(syncLoop).observe(card, { attributes: true, attributeFilter: ['class'] });
+  syncLoop();
 });

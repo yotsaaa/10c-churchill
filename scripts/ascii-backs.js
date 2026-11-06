@@ -4,7 +4,7 @@
  * card's own picture redrawn in text symbols.
  *   about card      → the site icon (rose vine)
  *   project 01      → the uncanny valley collage
- *   project 02      → a face-on still of the lampe berger 3d model
+ *   project 02      → its looping preview video (Images/extra/p2vid.mp4), live
  *   project 03      → the preview video, live, as moving ascii
  *   in-class demos  → its looping preview video, live, the same way
  *   gallery cards   → their first four pieces as a 2×2 grid
@@ -114,7 +114,7 @@
         attach(card, async () => [await loadImg('Images/siteIcon.png')], 'alpha');
         return;
       }
-      // in-class demos → its looping preview video, live (same as project 03)
+      // in-class demos & project 02 → their looping preview video, live (same as project 03)
       const loop = card.querySelector('.loop-video');
       if (loop) {
         attach(card, async () => (loop.readyState >= 2 ? [loop] : []), null, true);
