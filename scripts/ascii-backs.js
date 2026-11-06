@@ -4,7 +4,7 @@
  * card's own picture redrawn in text symbols.
  *   about card      → the site icon (rose vine)
  *   project 01      → the uncanny valley collage
- *   project 02      → a face-on still of the blood blade 3d model
+ *   project 02      → a face-on still of the lampe berger 3d model
  *   project 03      → the preview video, live, as moving ascii
  *   in-class demos  → its looping preview video, live, the same way
  *   gallery cards   → their first four pieces as a 2×2 grid
@@ -132,10 +132,10 @@
         attach(card, async () => (video.readyState >= 2 ? [video] : []), null, true);
         return;
       }
-      // project 02 → a still of the blood blade 3d model (Images/p2-blade-back.png),
+      // project 02 → a still of the lampe berger 3d model (Images/p2-lamp-back.png),
       // rendered face-on so the back always shows the full silhouette
       if (card.id === 'project-02') {
-        attach(card, async () => [await loadImg('Images/p2-blade-back.png')]);
+        attach(card, async () => [await loadImg('Images/p2-lamp-back.png')]);
         return;
       }
       const img = card.querySelector('.card-media img');
