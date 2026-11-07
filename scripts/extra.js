@@ -48,14 +48,38 @@ document.querySelectorAll('.extra-card').forEach(function (card) {
 
 // floating looping previews (in-class demos, project 02): play while the card floats.
 // once opened, the demos one pauses (the gallery takes over); videos marked
-// data-play-open (project 02) keep playing, shown big above the 3d model
+// data-play-open (project 02) keep playing, shown big above the 3d model.
+// videos marked data-sound-toggle (project 02) can be clicked for sound — only while the card is open
 document.querySelectorAll('.ring-card').forEach(function (card) {
   const loop = card.querySelector('.loop-video');
   if (!loop) return;
+  const box = loop.closest('.loop-preview');
+  const hint = box && box.querySelector('.loop-sound-hint');
+
+  function renderSound() {
+    const on = !loop.muted;
+    if (box) box.classList.toggle('sound-on', on);
+    if (hint) hint.textContent = on ? '♪ sound on · click to mute' : '♪ click for sound';
+  }
+
   const syncLoop = () => {
-    if (card.classList.contains('focused') && !loop.hasAttribute('data-play-open')) loop.pause();
-    else { loop.muted = true; loop.play().catch(() => {}); }
+    const open = card.classList.contains('focused');
+    if (open && !loop.hasAttribute('data-play-open')) { loop.pause(); return; }
+    if (!open) loop.muted = true;          // closing the card always silences it
+    loop.play().catch(() => {});
+    renderSound();
   };
   new MutationObserver(syncLoop).observe(card, { attributes: true, attributeFilter: ['class'] });
   syncLoop();
+
+  if (box && loop.hasAttribute('data-sound-toggle')) {
+    box.addEventListener('click', (e) => {
+      if (!card.classList.contains('focused')) return;   // floating on the ring: clicks open the card as usual
+      e.stopPropagation();
+      loop.muted = !loop.muted;
+      if (!loop.muted) loop.volume = 1;
+      loop.play().catch(() => {});
+      renderSound();
+    });
+  }
 });

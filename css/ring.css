@@ -591,6 +591,23 @@ html.is-idle .ring-close {
 /* opened: wider card, big video on top → 3d model → text */
 .ring-card.has-model.has-loop.focused { --card-w: min(780px, 94vw); }
 .ring-card.has-model.has-loop.focused .loop-preview { display: block; margin: 10px 0 6px; }
+/* project 02 opened: click the video to turn its sound on / off */
+.loop-preview { position: relative; }
+.loop-sound-hint {
+  display: none;
+  position: absolute; left: 8px; bottom: 8px;
+  padding: 2px 8px;
+  font-family: var(--font-pixel); font-size: 11px;
+  color: var(--pink-soft, #f4a6c2);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px dotted rgba(244, 166, 194, 0.5);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.ring-card.focused .loop-preview:has(video[data-sound-toggle]) { pointer-events: auto; cursor: pointer; }
+.ring-card.focused .loop-sound-hint { display: block; }
+.loop-preview.sound-on .loop-sound-hint { opacity: 0.55; }
+.loop-preview.sound-on:hover .loop-sound-hint { opacity: 1; }
 
 
 /* hidden for now: the ☰ menu button (top right) and the title at the top.
