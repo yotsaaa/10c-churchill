@@ -161,10 +161,7 @@
       playOnce(RESPAWN);
       walker.classList.remove('blink');
     } else if (dead === 'up' && reachedEnd(now)) {
-      // hold her landing pose so the run blends in from her standing on the ground
-      mv.pause();
-      mv.currentTime = Math.max(0, mv.duration - 0.001);
-      runAgain();
+      runAgain(true);
     }
   }
 
@@ -180,13 +177,20 @@
     }
   }
 
-  function runAgain() {
+  function runAgain(fromLanding) {
     clearTimeout(deathTimer);
     dead = false;
     walker.classList.remove('dead', 'blink');
     mv.setAttribute('camera-orbit', SIDE[String(dir)]);
     mv.setAttribute('camera-target', TARGET.run);
+    // her respawn landing lines up exactly with the first frame of the run, so switch straight
+    // over — a blend would pull in the respawn's first frame, which has her up in the air
+    if (fromLanding) {
+      mv.setAttribute('animation-crossfade-duration', '0');
+      setTimeout(() => mv.removeAttribute('animation-crossfade-duration'), 200);
+    }
     mv.animationName = RUN;
+    mv.currentTime = 0;
     mv.play();
     turnUntil = performance.now() + TURN_MS;
   }
