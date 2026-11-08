@@ -9,6 +9,8 @@
  *   in-class demos  → its looping preview video, live, the same way
  *   gallery cards   → their first four pieces as a 2×2 grid
  * everything is drawn once (except the live video), so it costs almost nothing.
+ * while a back's picture is still loading it shows constantly-scrambling symbols
+ * (like the loading screen), then unscrambles into the picture once it's ready.
  */
 
 (function () {
@@ -17,6 +19,11 @@
   const FONT_PX = 7;              // size of each ascii character (smaller = more detail)
   const CHAR_W = 0.6;             // monospace character width, as a fraction of its height
   const LIVE_MS = 120;            // how often the project 03 video back refreshes
+  const SCRAMBLE_MS = 70;         // how often the loading scramble changes
+  const REVEAL_MS = 600;          // how long the scramble takes to settle into the picture
+  // same symbols as the loading screen
+  const SCRAMBLE = '▓▒░◇◆※∴∵◐◓◑◒⌁⌇⟡⊹✦✧';
+  const randGlyph = () => SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)];
 
   const loadImg = (src) => new Promise((res, rej) => {
     const i = new Image();
@@ -91,14 +98,24 @@
     label.textContent = num ? num.textContent : '';
     back.appendChild(label);
 
+    // scramble straight away, until the picture is ready
+    const st = { card, pre, final: null, order: null, revealStart: 0, done: false };
+    back.classList.add('has-ascii');
+    scrambling.push(st);
+
     const render = async () => {
       try {
         const srcs = await getSources();
         if (!srcs || !srcs.length) return;
-        pre.textContent = toAscii(card, srcs, mode);
-        back.classList.add('has-ascii');
-      } catch (e) { /* keep the plain symbol pattern */ }
+        const text = toAscii(card, srcs, mode);
+        if (!st.final && !st.done) startReveal(st, text);   // first time: unscramble into it
+        else if (st.done) pre.textContent = text;           // live video backs: just update
+        else st.final = text;
+      } catch (e) { /* picture not ready yet — keep scrambling */ }
     };
+    st.render = render;
+    st.live = live;
+    allStates.push(st);
     render();
     if (live) {
       setInterval(() => {
@@ -106,6 +123,56 @@
       }, LIVE_MS);
     }
   }
+
+  // ---- loading scramble ------------------------------------------------------
+  const scrambling = [];
+  const allStates = [];
+
+  function startReveal(st, text) {
+    st.final = text;
+    // each character settles at its own random moment during the reveal
+    st.order = new Float32Array(text.length);
+    for (let i = 0; i < text.length; i++) st.order[i] = Math.random();
+    st.revealStart = performance.now();
+  }
+
+  function scrambleBlock(card) {
+    const cols = Math.max(10, Math.floor(card.offsetWidth / (FONT_PX * CHAR_W)));
+    const rows = Math.max(6, Math.floor(card.offsetHeight / FONT_PX));
+    let out = '';
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) out += Math.random() < 0.35 ? ' ' : randGlyph();
+      out += '\n';
+    }
+    return out;
+  }
+
+  function tickScramble() {
+    const now = performance.now();
+    for (let k = scrambling.length - 1; k >= 0; k--) {
+      const st = scrambling[k];
+      const facing = st.card.classList.contains('show-back') && !document.hidden;
+      if (!st.final) {
+        if (facing) st.pre.textContent = scrambleBlock(st.card);
+        continue;
+      }
+      const p = (now - st.revealStart) / REVEAL_MS;
+      if (p >= 1 || !facing) {               // finished (or nobody's looking) — show the picture
+        st.pre.textContent = st.final;
+        st.done = true;
+        scrambling.splice(k, 1);
+        continue;
+      }
+      const f = st.final;
+      let out = '';
+      for (let i = 0; i < f.length; i++) {
+        const c = f[i];
+        out += (c === '\n' || st.order[i] < p) ? c : (c === ' ' && Math.random() < 0.6 ? ' ' : randGlyph());
+      }
+      st.pre.textContent = out;
+    }
+  }
+  setInterval(tickScramble, SCRAMBLE_MS);
 
   function setup() {
     document.querySelectorAll('.ring-card').forEach((card) => {
@@ -144,7 +211,9 @@
     });
   }
 
-  // wait for everything (images, fonts) so the cards are their real size
-  if (document.readyState === 'complete') setup();
-  else window.addEventListener('load', setup);
+  // start right away (scrambling until each picture is ready); once everything has loaded
+  // (images, fonts) the cards are their final size, so redraw the still pictures to fit
+  setup();
+  const refit = () => allStates.forEach((st) => { if (!st.live) st.render(); });
+  if (document.readyState !== 'complete') window.addEventListener('load', () => setTimeout(refit, 50));
 })();

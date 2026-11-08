@@ -8,6 +8,8 @@
  * "Dance" (models/briar dance.glb), "Death" (models/briar death.glb) and "Respawn"
  * (models/briar respawn.glb) added in. the death & respawn are pinned in place; the death
  * ends with her exploded and only her pillory left on the ground.
+ * she starts hidden — the Ƹ̵̡Ӝ̵̨̄Ʒ button (bottom right) shows / hides her. her model only
+ * loads the first time she's shown.
  * size: change --walker-h on .walker in css/ring.css. speed etc: the numbers below.
  */
 
@@ -19,8 +21,10 @@
   if (!mv) return;
 
   // hide her for people who've asked their computer for less motion
+  const toggle = document.getElementById('briar-toggle');
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     walker.remove();
+    if (toggle) toggle.remove();
     return;
   }
 
@@ -58,8 +62,10 @@
   }
 
   function frame(now) {
+    requestAnimationFrame(frame);
     const dt = last === null ? 0 : Math.min(0.05, (now - last) / 1000);
     last = now;
+    if (!shown) return;
     const { width } = walker.getBoundingClientRect();
     const size = width / BOX;                   // how big she is
     // she runs until her middle is a little past each edge, then turns round
@@ -80,7 +86,6 @@
     }
     if (dead) deathStep(now);
     walker.style.transform = 'translateX(' + x.toFixed(1) + 'px)';
-    requestAnimationFrame(frame);
   }
 
   function stopDancing() {
@@ -212,7 +217,34 @@
     });
   }
 
+  // ---- Ƹ̵̡Ӝ̵̨̄Ʒ show / hide ---------------------------------------------------------
+  let shown = false;
+  function setShown(on) {
+    shown = on;
+    if (on) {
+      x = -9999;                                // she runs in from the left edge
+      dir = 1;
+      face(1);
+      walker.classList.remove('off');
+      if (!mv.getAttribute('src')) mv.setAttribute('src', mv.dataset.src);   // first time: load her
+      else mv.play();
+    } else {
+      if (dead) runAgain();
+      if (dancing) stopDancing();
+      walker.classList.add('off');
+      mv.pause();
+    }
+    if (toggle) {
+      toggle.querySelector('.snd-dot').textContent = on ? '●' : '◌';
+      toggle.classList.toggle('playing', on);
+      toggle.setAttribute('aria-pressed', String(on));
+      toggle.setAttribute('aria-label', on ? 'hide briar' : 'show briar');
+      toggle.title = on ? 'hide briar' : 'show briar';
+    }
+  }
+  if (toggle) toggle.addEventListener('click', (e) => { e.stopPropagation(); setShown(!shown); });
+
   face(1);
-  mv.addEventListener('load', () => { mv.play(); walker.classList.add('ready'); });
+  mv.addEventListener('load', () => { if (shown) mv.play(); walker.classList.add('ready'); });
   requestAnimationFrame(frame);
 })();
