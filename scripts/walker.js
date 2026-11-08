@@ -28,6 +28,8 @@
   // which way the camera looks at her: from her left side (running right), her right side
   // (running left), or straight on (dancing, facing you)
   const SIDE = { '1': '-90deg 82deg 4m', '-1': '90deg 82deg 4m', front: '0deg 82deg 4m' };
+  // where the camera points (height of her middle) — a touch lower while dancing so her feet stay on the bottom edge
+  const TARGET = { run: '0m 0.78m 0m', dance: '0m 0.67m 0m' };
 
   let x = -9999, dir = 1, last = null, turnUntil = 0, dancing = false, danceTimer = null;
 
@@ -62,6 +64,7 @@
       dancing = true;
       walker.classList.add('dancing');
       mv.setAttribute('camera-orbit', SIDE.front);
+      mv.setAttribute('camera-target', TARGET.dance);
       mv.animationName = DANCE;
       mv.currentTime = 0;
       mv.play();
@@ -71,6 +74,7 @@
       dancing = false;
       walker.classList.remove('dancing');
       mv.setAttribute('camera-orbit', SIDE[String(dir)]);
+      mv.setAttribute('camera-target', TARGET.run);
       mv.animationName = RUN;
       mv.play();
       turnUntil = performance.now() + TURN_MS;   // let her turn back before running off

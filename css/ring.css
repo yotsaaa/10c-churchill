@@ -630,7 +630,8 @@ html.is-idle .ring-close {
   --walker-h: 150px;
   position: fixed;
   left: 0;
-  bottom: 0;
+  /* her box has a little empty space under her feet — pull it down so she runs right on the bottom edge */
+  bottom: calc(var(--walker-h) * -0.133);
   width: var(--walker-h);
   height: var(--walker-h);
   z-index: 0;
