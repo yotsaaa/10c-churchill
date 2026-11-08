@@ -8,8 +8,8 @@
  *   SIZE          size of each character
  *   SWAY_PX       how far the vine tips swing
  *   SWAY_SEC      how long one slow sway takes
- *   VINE_GAP      space between vines (smaller = more vines). they fill the empty space beside the cards,
- *                 so bigger screens get more of them
+ *   VINES_PER_SIDE how many vines hang on each side (on wide screens)
+ *   STEM_WEIGHT   how thick the vine stems are (1 = thin, 2 = thick)
  *   PETALS_PER_VINE / LEAVES_PER_VINE  how often each vine drops a petal / a leaf (per second)
  *   GLYPHS        which symbols are used for leaves, flowers, petals and falling leaves
  */
@@ -24,12 +24,13 @@
   const STEP = SIZE * 0.92;      // vertical spacing of the vine
   const SWAY_PX = 16;
   const SWAY_SEC = 8;
-  const VINE_GAP = 40;           // px between vines
-  const CARDS_W = 1040;          // roughly how wide the ring of cards is (vines stay out of it)
-  const PETALS_PER_VINE = 0.25;
-  const LEAVES_PER_VINE = 0.12;
+  const VINES_PER_SIDE = 4;
+  const STEM_WEIGHT = 2;
+  const PETALS_PER_VINE = 0.12;
+  const LEAVES_PER_VINE = 0.07;
   const FPS = 30;
   const FONT = SIZE + "px 'Space Mono', 'MS Gothic', 'Courier New', monospace";
+  const STEM_FONT = 'bold ' + FONT;
   const LEAF_FONT = (SIZE + 4) + "px 'Space Mono', 'MS Gothic', 'Courier New', monospace";
 
   const GLYPHS = {
@@ -66,15 +67,14 @@
 
     seed = 7;
     vines = [];
-    // how far in from each edge the vines grow: all the empty space beside the cards
-    const zone = Math.max(46, Math.min(W * 0.16, 190), (W - CARDS_W) / 2 - 20);
-    const perSide = W < 700 ? 2 : Math.max(3, Math.round(zone / VINE_GAP));
+    const zone = Math.max(46, Math.min(190, W * 0.13));     // how far in from each edge the vines grow
+    const perSide = W < 700 ? 2 : W < 1100 ? 3 : VINES_PER_SIDE;
 
     [-1, 1].forEach((side) => {
       for (let i = 0; i < perSide; i++) {
         const f = Math.min(0.95, Math.max(0.08, (i + 0.5 + (rnd() - 0.5) * 0.6) / perSide));
         const fromEdge = f * zone;
-        const len = H * (0.26 + rnd() * 0.5) * (1 - f * 0.38);   // vines nearest the edge hang lowest
+        const len = H * (0.32 + rnd() * 0.42) * (1 - f * 0.4);   // vines nearest the edge hang lowest
         const n = Math.max(6, Math.floor(len / STEP));
         const segs = [];
         for (let k = 0; k < n; k++) {
@@ -130,8 +130,12 @@
         const next = k < v.n - 1 ? point(v, k + 1, t) : null;
         const fade = v.alpha * (1 - 0.35 * (k / v.n));      // tips a little softer
         if (next) {
+          const ch = stemChar(next.x - p.x);
+          ctx.font = STEM_FONT;
           ctx.fillStyle = rgba(COLOR.stem, fade);
-          ctx.fillText(stemChar(next.x - p.x), p.x, p.y);
+          // drawn a few times side by side to make the stem thicker
+          for (let w = 0; w < STEM_WEIGHT; w++) ctx.fillText(ch, p.x + (w - (STEM_WEIGHT - 1) / 2) * 1.1, p.y);
+          ctx.font = FONT;
         } else {
           ctx.fillStyle = rgba(COLOR.bloom, fade);
           ctx.fillText(v.tip, p.x, p.y);
