@@ -75,7 +75,7 @@
     // the dance is over once its clock reaches the end (or jumps back to the start to loop)
     if (dancing && now - danceStart > 1000) {
       const t = mv.currentTime, end = mv.duration;
-      if ((end && t >= end - 0.04) || t < danceLastT - 0.5) stopDancing();
+      if ((end && t >= end - 0.05) || t < danceLastT - 0.5) stopDancing();
       danceLastT = t;
     }
     if (dead) deathStep(now);
@@ -105,7 +105,7 @@
     mv.setAttribute('camera-target', TARGET.dance);
     mv.animationName = DANCE;
     mv.currentTime = 0;
-    mv.play();
+    mv.play({ repetitions: 1 });               // once, holding the last frame (never loops back)
     danceStart = performance.now();
     danceLastT = 0;
     // backup in case the end of the dance is somehow missed
@@ -124,10 +124,12 @@
     deathTimer = setTimeout(getUp, DEATH_MAX_MS);   // backup
   }
 
+  // play an animation once, holding its last frame — so it never jumps back to its first
+  // frame (e.g. the respawn starts with her up in the air) before the next one takes over
   function playOnce(name) {
     mv.animationName = name;
     mv.currentTime = 0;
-    mv.play();
+    mv.play({ repetitions: 1 });
     phaseStart = performance.now();
     phaseLastT = 0;
   }
@@ -136,7 +138,7 @@
   function reachedEnd(now) {
     if (now - phaseStart < 400) return false;
     const t = mv.currentTime, end = mv.duration;
-    const done = (end && t >= end - 0.03) || t < phaseLastT - 0.3;
+    const done = (end && t >= end - 0.05) || t < phaseLastT - 0.3;
     phaseLastT = t;
     return done;
   }
@@ -159,6 +161,9 @@
       playOnce(RESPAWN);
       walker.classList.remove('blink');
     } else if (dead === 'up' && reachedEnd(now)) {
+      // hold her landing pose so the run blends in from her standing on the ground
+      mv.pause();
+      mv.currentTime = Math.max(0, mv.duration - 0.001);
       runAgain();
     }
   }
