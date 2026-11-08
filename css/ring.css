@@ -674,17 +674,3 @@ html.is-idle .ring-close {
 .ring-stage.is-focused ~ .walker.ready { opacity: 0.25; }
 .ring-stage.is-focused ~ .walker .walker-hit { pointer-events: none; }
 @media (max-width: 640px) { .walker { --walker-h: 110px; } }
-
-/* ascii vines down the left & right edges + falling petals (scripts/vines.js).
-   change --vines-opacity to make them stronger or softer */
-.vines {
-  --vines-opacity: 1;
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: var(--vines-opacity);
-  transition: opacity 0.5s ease;
-}
-/* softer while a card is open */
-.ring-stage.is-focused ~ .vines { opacity: calc(var(--vines-opacity) * 0.35); }
