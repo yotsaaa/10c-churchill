@@ -8,8 +8,10 @@
  *   SIZE          size of each character
  *   SWAY_PX       how far the vine tips swing
  *   SWAY_SEC      how long one slow sway takes
- *   PETALS_PER_SEC how often petals fall (both sides together)
- *   GLYPHS        which symbols are used for leaves, flowers and petals
+ *   VINE_GAP      space between vines (smaller = more vines). they fill the empty space beside the cards,
+ *                 so bigger screens get more of them
+ *   PETALS_PER_VINE / LEAVES_PER_VINE  how often each vine drops a petal / a leaf (per second)
+ *   GLYPHS        which symbols are used for leaves, flowers, petals and falling leaves
  */
 
 (function () {
@@ -22,16 +24,21 @@
   const STEP = SIZE * 0.92;      // vertical spacing of the vine
   const SWAY_PX = 16;
   const SWAY_SEC = 8;
-  const PETALS_PER_SEC = 2;
+  const VINE_GAP = 40;           // px between vines
+  const CARDS_W = 1040;          // roughly how wide the ring of cards is (vines stay out of it)
+  const PETALS_PER_VINE = 0.25;
+  const LEAVES_PER_VINE = 0.12;
   const FPS = 30;
   const FONT = SIZE + "px 'Space Mono', 'MS Gothic', 'Courier New', monospace";
+  const LEAF_FONT = (SIZE + 4) + "px 'Space Mono', 'MS Gothic', 'Courier New', monospace";
 
   const GLYPHS = {
     leafLeft:  ['~', '<', '{', '%', '&', '❧'],
     leafRight: ['~', '>', '}', '%', '&', '❦'],
     bloom:     ['@', '✿', '❀', '*', '✾'],
     tip:       [',', "'", '.', '✿'],
-    petal:     ['✿', '❀', '*', '·', '°', '⁎', '❦', '✾', ',']
+    petal:     ['✿', '❀', '*', '·', '°', '⁎', '✾', ','],
+    fallLeaf:  ['❦', '❧', '%', '&', '~', '{', '}', '<', '>', '§']
   };
   // site palette: dusty rose stems, pink leaves, blush flowers
   const COLOR = {
@@ -59,14 +66,15 @@
 
     seed = 7;
     vines = [];
-    const zone = Math.max(46, Math.min(190, W * 0.13));     // how far in from each edge the vines grow
-    const perSide = W < 700 ? 2 : W < 1100 ? 3 : 4;
+    // how far in from each edge the vines grow: all the empty space beside the cards
+    const zone = Math.max(46, Math.min(W * 0.16, 190), (W - CARDS_W) / 2 - 20);
+    const perSide = W < 700 ? 2 : Math.max(3, Math.round(zone / VINE_GAP));
 
     [-1, 1].forEach((side) => {
       for (let i = 0; i < perSide; i++) {
         const f = Math.min(0.95, Math.max(0.08, (i + 0.5 + (rnd() - 0.5) * 0.6) / perSide));
         const fromEdge = f * zone;
-        const len = H * (0.32 + rnd() * 0.42) * (1 - f * 0.4);   // vines nearest the edge hang lowest
+        const len = H * (0.26 + rnd() * 0.5) * (1 - f * 0.38);   // vines nearest the edge hang lowest
         const n = Math.max(6, Math.floor(len / STEP));
         const segs = [];
         for (let k = 0; k < n; k++) {
@@ -140,7 +148,7 @@
   }
 
   // ---- falling petals ------------------------------------------------------
-  function spawnPetal(t) {
+  function spawnPetal(t, kind) {
     const v = vines[Math.floor(Math.random() * vines.length)];
     if (!v) return;
     const leafy = [];
@@ -151,14 +159,17 @@
     petals.push({
       x: p.x + (leaf ? leaf.side * SIZE * 0.66 : 0),
       y: p.y,
-      vy: 16 + Math.random() * 20,          // px per second
+      vy: kind === 'leaf' ? 13 + Math.random() * 14 : 16 + Math.random() * 20,   // px per second
       drift: 6 + Math.random() * 12,        // side-to-side flutter
       ph: Math.random() * Math.PI * 2,
       rot: Math.random() * Math.PI * 2,
       vr: (Math.random() - 0.5) * 1.6,
-      ch: pick(GLYPHS.petal),
-      color: Math.random() < 0.5 ? COLOR.leaf : COLOR.bloom,
-      a0: 0.55 + Math.random() * 0.35,
+      kind: kind || 'petal',
+      ch: kind === 'leaf' ? pick(GLYPHS.fallLeaf) : pick(GLYPHS.petal),
+      color: kind === 'leaf' ? COLOR.leaf : (Math.random() < 0.5 ? COLOR.leaf : COLOR.bloom),
+      swing: 10 + Math.random() * 16,       // leaves rock side to side as they fall
+      swingSpeed: 1.1 + Math.random() * 0.8,
+      a0: 0.7 + Math.random() * 0.3,
       born: t
     });
   }
@@ -167,23 +178,34 @@
     for (let i = petals.length - 1; i >= 0; i--) {
       const p = petals[i];
       p.y += p.vy * dt;
-      p.x += Math.sin(t * 1.4 + p.ph) * p.drift * dt;
       p.rot += p.vr * dt;
-      // fade in quickly, then fade out the lower it gets
-      const low = Math.max(0, 1 - p.y / (H * 0.95));
-      const a = p.a0 * Math.min(1, (t - p.born) / 0.5) * Math.pow(low, 1.3);
-      if (a < 0.01 || p.y > H) { petals.splice(i, 1); continue; }
+      let lean;
+      if (p.kind === 'leaf') {
+        // a falling leaf rocks back and forth like a little pendulum, tilting as it swings
+        const sw = Math.sin(t * p.swingSpeed + p.ph);
+        p.x += Math.cos(t * p.swingSpeed + p.ph) * p.swing * p.swingSpeed * dt;
+        lean = sw * 0.8;
+      } else {
+        p.x += Math.sin(t * 1.4 + p.ph) * p.drift * dt;
+        lean = Math.sin(p.rot) * 0.9;
+      }
+      // fade in quickly, stay clear through the top part of the screen, then fade out lower down
+      const low = Math.max(0, 1 - p.y / (H * 0.97));
+      const a = p.a0 * Math.min(1, (t - p.born) / 0.5) * Math.pow(Math.min(1, low * 1.7), 1.25);
+      if (p.y > H || (a < 0.01 && t - p.born > 0.6)) { petals.splice(i, 1); continue; }
       ctx.save();
       ctx.translate(p.x, p.y);
-      ctx.rotate(Math.sin(p.rot) * 0.9);
+      ctx.rotate(lean);
       ctx.fillStyle = rgba(p.color, a);
+      if (p.kind === 'leaf') ctx.font = LEAF_FONT;
       ctx.fillText(p.ch, 0, 0);
+      if (p.kind === 'leaf') ctx.font = FONT;
       ctx.restore();
     }
   }
 
   // ---- loop ----------------------------------------------------------------
-  let last = null, lastDraw = 0, spawnDebt = 0;
+  let last = null, lastDraw = 0, spawnDebt = 0, leafDebt = 0;
 
   function render(t, dt) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -202,8 +224,10 @@
     const dt = last === null ? 0 : Math.min(0.1, t - last);
     last = t;
     lastDraw = now;
-    spawnDebt += dt * PETALS_PER_SEC;
-    while (spawnDebt >= 1) { spawnDebt -= 1; spawnPetal(t); }
+    spawnDebt += dt * PETALS_PER_VINE * vines.length;
+    while (spawnDebt >= 1) { spawnDebt -= 1; spawnPetal(t, 'petal'); }
+    leafDebt += dt * LEAVES_PER_VINE * vines.length;
+    while (leafDebt >= 1) { leafDebt -= 1; spawnPetal(t, 'leaf'); }
     render(t, dt);
   }
 
@@ -215,8 +239,8 @@
     if (document.fonts) document.fonts.ready.then(() => render(0, 0));
   } else {
     // start with a few petals already on their way down
-    for (let i = 0; i < 6; i++) {
-      spawnPetal(0);
+    for (let i = 0; i < Math.round(vines.length * 0.9); i++) {
+      spawnPetal(0, i % 3 ? 'petal' : 'leaf');
       const p = petals[petals.length - 1];
       if (p) { p.y += Math.random() * H * 0.5; p.born = -1; }
     }
