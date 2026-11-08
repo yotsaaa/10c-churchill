@@ -2,9 +2,11 @@
  * natalie churchill — 10c f26
  * briar runs back and forth along the bottom of the page.
  * click her: she stops, turns to face you and dances the whole dance, then runs on.
+ * click her 5 times quickly: she plays her death animation, fades away, and comes
+ * running back in from the left a moment later.
  * model: models/briar-web.glb — a small web copy of models/briar-2.glb ("Run_Base")
- * with the "Dance" animation from models/briar dance.glb added in.
- * size: change --walker-h on .walker in css/ring.css. speed: the numbers below.
+ * with "Dance" (models/briar dance.glb) and "Death" (models/briar death.glb) added in.
+ * size: change --walker-h on .walker in css/ring.css. speed etc: the numbers below.
  */
 
 (function () {
@@ -24,21 +26,32 @@
   const SPEED = 1;
   const TURN_MS = 450;          // little pause while she turns round at each edge
   const DANCE_MAX_MS = 9000;    // backup only — she dances the whole dance animation (about 6.8 s)
-  const RUN = 'Run_Base', DANCE = 'Dance';
+  const DEATH_CLICKS = 5;       // clicks in a row that set off the death animation
+  const CLICK_GAP_MS = 1200;    // clicks further apart than this start the count again
+  const FADE_AT = 2.6;          // seconds into the death animation when she starts fading away
+  const RESPAWN_MS = 1800;      // how long she's gone (after fading) before running back in
+  const DEATH_MAX_MS = 7000;    // backup only
+  const RUN = 'Run_Base', DANCE = 'Dance', DEATH = 'Death';
   // which way the camera looks at her: from her left side (running right), her right side
   // (running left), or straight on (dancing, facing you)
   const SIDE = { '1': '-90deg 82deg 4m', '-1': '90deg 82deg 4m', front: '0deg 82deg 4m' };
-  // where the camera points (height of her middle) — a touch lower while dancing so her feet stay on the bottom edge
-  const TARGET = { run: '0m 0.78m 0m', dance: '0m 0.67m 0m' };
+  // where the camera points (height of her middle) — a touch lower while dancing so her feet
+  // stay on the bottom edge; shifted back while dying so the knock-back stays in frame
+  const TARGET = { run: '0m 0.78m 0m', dance: '0m 0.67m 0m', death: '0m 0.74m -0.55m' };
+  // the death animation starts her a little ahead of where she runs, then knocks her back —
+  // nudge the box by this much (in "walker heights") so it starts right where she was
+  const DEATH_SHIFT = 0.71;
 
-  let x = -9999, dir = 1, last = null, turnUntil = 0, dancing = false, danceTimer = null;
-  let danceStart = 0, danceLastT = 0;
+  let x = -9999, dir = 1, last = null, turnUntil = 0;
+  let dancing = false, danceTimer = null, danceStart = 0, danceLastT = 0;
+  let dead = false, deathStart = 0, faded = false, deathTimer = null;
+  let clicks = 0, lastClick = 0;
 
   const loaderUp = () => !!document.getElementById('ascii-loader-root');
 
   function face(d) {
     dir = d;
-    if (!dancing) mv.setAttribute('camera-orbit', SIDE[String(d)]);
+    if (!dancing && !dead) mv.setAttribute('camera-orbit', SIDE[String(d)]);
   }
 
   function frame(now) {
@@ -48,7 +61,7 @@
     const maxX = window.innerWidth - width;
 
     if (x === -9999) x = -width * 0.6;        // start just off the left edge
-    if (!loaderUp() && !dancing && now > turnUntil) {
+    if (!loaderUp() && !dancing && !dead && now > turnUntil) {
       x += dir * SPEED * height * dt;
       // run a little past each edge, then turn round
       if (dir > 0 && x > maxX + width * 0.6) { x = maxX + width * 0.6; face(-1); turnUntil = now + TURN_MS; }
@@ -60,6 +73,8 @@
       if ((end && t >= end - 0.04) || t < danceLastT - 0.5) stopDancing();
       danceLastT = t;
     }
+    // dying: fade her out while she's down, before she drops out of sight
+    if (dead && !faded && now - deathStart > 300 && mv.currentTime >= FADE_AT) fadeAway();
     walker.style.transform = 'translateX(' + x.toFixed(1) + 'px)';
     requestAnimationFrame(frame);
   }
@@ -69,6 +84,7 @@
     clearTimeout(danceTimer);
     dancing = false;
     walker.classList.remove('dancing');
+    if (dead) return;                           // the death animation took over
     mv.setAttribute('camera-orbit', SIDE[String(dir)]);
     mv.setAttribute('camera-target', TARGET.run);
     mv.animationName = RUN;
@@ -76,9 +92,9 @@
     turnUntil = performance.now() + TURN_MS;    // let her turn back before running off
   }
 
-  // she dances the whole dance once (clicks while she's dancing are ignored), then runs on
+  // she dances the whole dance once (clicks while she's dancing don't restart it), then runs on
   function dance() {
-    if (!walker.classList.contains('ready') || dancing) return;
+    if (dancing || dead) return;
     dancing = true;
     walker.classList.add('dancing');
     mv.setAttribute('camera-orbit', SIDE.front);
@@ -92,10 +108,62 @@
     danceTimer = setTimeout(stopDancing, DANCE_MAX_MS);
   }
 
+  function die() {
+    if (dead) return;
+    dead = true;
+    stopDancing();
+    walker.classList.add('dead');
+    // side view, camera pulled back along her path, box nudged so she starts where she stood
+    mv.setAttribute('camera-orbit', SIDE[String(dir)]);
+    mv.setAttribute('camera-target', TARGET.death);
+    if (mv.jumpCameraToGoal) mv.jumpCameraToGoal();
+    x -= dir * DEATH_SHIFT * walker.getBoundingClientRect().height;
+    mv.animationName = DEATH;
+    mv.currentTime = 0;
+    mv.play({ repetitions: 1 });
+    deathStart = performance.now();
+    faded = false;
+    deathTimer = setTimeout(fadeAway, DEATH_MAX_MS);   // backup
+  }
+
+  function fadeAway() {
+    if (!dead || faded) return;
+    faded = true;
+    clearTimeout(deathTimer);
+    walker.classList.add('gone');
+    setTimeout(respawn, RESPAWN_MS);
+  }
+
+  // back to life: running in from the left edge again
+  function respawn() {
+    const { width } = walker.getBoundingClientRect();
+    x = -width * 0.6;
+    dir = 1;
+    dead = false;
+    walker.classList.remove('dead');
+    mv.setAttribute('camera-orbit', SIDE['1']);
+    mv.setAttribute('camera-target', TARGET.run);
+    if (mv.jumpCameraToGoal) mv.jumpCameraToGoal();
+    mv.animationName = RUN;
+    mv.play();
+    turnUntil = 0;
+    walker.classList.remove('gone');
+  }
+
+  // every click counts toward the death; the first one starts the dance
+  function tap() {
+    if (!walker.classList.contains('ready') || dead) return;
+    const now = performance.now();
+    clicks = now - lastClick > CLICK_GAP_MS ? 1 : clicks + 1;
+    lastClick = now;
+    if (clicks >= DEATH_CLICKS) { clicks = 0; die(); }
+    else dance();
+  }
+
   if (hit) {
-    hit.addEventListener('click', (e) => { e.stopPropagation(); dance(); });
+    hit.addEventListener('click', (e) => { e.stopPropagation(); tap(); });
     hit.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dance(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); }
     });
   }
 
