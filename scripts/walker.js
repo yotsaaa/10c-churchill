@@ -1,10 +1,10 @@
 /**
  * natalie churchill — 10c f26
  * briar runs back and forth along the bottom of the page.
- * click her: she stops, turns to face you and dances for a few seconds, then runs on.
+ * click her: she stops, turns to face you and dances the whole dance, then runs on.
  * model: models/briar-web.glb — a small web copy of models/briar-2.glb ("Run_Base")
  * with the "Dance" animation from models/briar dance.glb added in.
- * size: change --walker-h on .walker in css/ring.css. speed / dance length: the numbers below.
+ * size: change --walker-h on .walker in css/ring.css. speed: the numbers below.
  */
 
 (function () {
@@ -23,7 +23,7 @@
   // how far she runs each second, in "walker heights" — 1 matches her stride so her feet don't slide
   const SPEED = 1;
   const TURN_MS = 450;          // little pause while she turns round at each edge
-  const DANCE_MS = 3000;        // how long she dances when clicked
+  const DANCE_MAX_MS = 9000;    // backup only — she dances the whole dance animation (about 6.8 s)
   const RUN = 'Run_Base', DANCE = 'Dance';
   // which way the camera looks at her: from her left side (running right), her right side
   // (running left), or straight on (dancing, facing you)
@@ -32,6 +32,7 @@
   const TARGET = { run: '0m 0.78m 0m', dance: '0m 0.67m 0m' };
 
   let x = -9999, dir = 1, last = null, turnUntil = 0, dancing = false, danceTimer = null;
+  let danceStart = 0, danceLastT = 0;
 
   const loaderUp = () => !!document.getElementById('ascii-loader-root');
 
@@ -53,32 +54,42 @@
       if (dir > 0 && x > maxX + width * 0.6) { x = maxX + width * 0.6; face(-1); turnUntil = now + TURN_MS; }
       if (dir < 0 && x < -width * 0.6)        { x = -width * 0.6;       face(1);  turnUntil = now + TURN_MS; }
     }
+    // the dance is over once its clock reaches the end (or jumps back to the start to loop)
+    if (dancing && now - danceStart > 1000) {
+      const t = mv.currentTime, end = mv.duration;
+      if ((end && t >= end - 0.04) || t < danceLastT - 0.5) stopDancing();
+      danceLastT = t;
+    }
     walker.style.transform = 'translateX(' + x.toFixed(1) + 'px)';
     requestAnimationFrame(frame);
   }
 
-  function dance() {
-    if (!walker.classList.contains('ready')) return;
+  function stopDancing() {
+    if (!dancing) return;
     clearTimeout(danceTimer);
-    if (!dancing) {
-      dancing = true;
-      walker.classList.add('dancing');
-      mv.setAttribute('camera-orbit', SIDE.front);
-      mv.setAttribute('camera-target', TARGET.dance);
-      mv.animationName = DANCE;
-      mv.currentTime = 0;
-      mv.play();
-    }
-    // clicking again while she dances keeps her dancing a bit longer
-    danceTimer = setTimeout(() => {
-      dancing = false;
-      walker.classList.remove('dancing');
-      mv.setAttribute('camera-orbit', SIDE[String(dir)]);
-      mv.setAttribute('camera-target', TARGET.run);
-      mv.animationName = RUN;
-      mv.play();
-      turnUntil = performance.now() + TURN_MS;   // let her turn back before running off
-    }, DANCE_MS);
+    dancing = false;
+    walker.classList.remove('dancing');
+    mv.setAttribute('camera-orbit', SIDE[String(dir)]);
+    mv.setAttribute('camera-target', TARGET.run);
+    mv.animationName = RUN;
+    mv.play();                                  // loops forever again
+    turnUntil = performance.now() + TURN_MS;    // let her turn back before running off
+  }
+
+  // she dances the whole dance once (clicks while she's dancing are ignored), then runs on
+  function dance() {
+    if (!walker.classList.contains('ready') || dancing) return;
+    dancing = true;
+    walker.classList.add('dancing');
+    mv.setAttribute('camera-orbit', SIDE.front);
+    mv.setAttribute('camera-target', TARGET.dance);
+    mv.animationName = DANCE;
+    mv.currentTime = 0;
+    mv.play();
+    danceStart = performance.now();
+    danceLastT = 0;
+    // backup in case the end of the dance is somehow missed
+    danceTimer = setTimeout(stopDancing, DANCE_MAX_MS);
   }
 
   if (hit) {
