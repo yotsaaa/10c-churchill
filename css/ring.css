@@ -651,6 +651,25 @@ html.is-idle .ring-close {
   --progress-bar-height: 0;
   pointer-events: none;
 }
-/* fade her back while a card is open or the idle screensaver is on */
+/* she sits just in front of the ring (but behind the buttons) so she can be clicked.
+   only a narrow box around her body catches clicks — the rest still spins the ring */
+.walker { z-index: 2; }
+.walker-hit {
+  position: absolute;
+  left: 30%;
+  width: 40%;
+  top: 18%;
+  height: 80%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.walker-hit:focus-visible { outline: 1px dotted var(--pink-soft); }
+.walker:not(.ready) .walker-hit { pointer-events: none; }
+/* while a card is open she drops behind it, fades back and can't be clicked */
+.ring-stage.is-focused ~ .walker { z-index: 0; }
 .ring-stage.is-focused ~ .walker.ready { opacity: 0.25; }
+.ring-stage.is-focused ~ .walker .walker-hit { pointer-events: none; }
 @media (max-width: 640px) { .walker { --walker-h: 110px; } }
