@@ -359,12 +359,12 @@
     else if (e.key === 'Enter' && focused < 0 && document.activeElement === document.body) openCard(frontIndex());
   });
 
-  // ---- mouse wheel / trackpad: scroll through the cards ----------------------
-  // one wheel notch = one card. inside an open card the wheel works as normal
+  // ---- mouse wheel / trackpad: spin the ring ---------------------------------
+  // scrolling pushes the ring like a flick: it glides with momentum (faster scrolling = further),
+  // then settles on the nearest card. inside an open card the wheel works as normal
   // (scrolling the card, zooming the 3d model)
-  const WHEEL_STEP = 50;         // how much scrolling counts as one card
-  const WHEEL_COOLDOWN = 350;    // ms between card steps, so a trackpad swipe doesn't fly past everything
-  let wheelSum = 0, wheelLastStep = 0, wheelLastEvent = 0;
+  const WHEEL_SPEED = 0.045;     // how hard each bit of scrolling pushes the ring
+  const WHEEL_MAX = 30;          // top spin speed from the wheel (degrees per frame)
   window.addEventListener('wheel', (e) => {
     if (focused >= 0 || loaderUp()) return;
     if (document.getElementById('sidenav')?.classList.contains('open')) return;
@@ -372,18 +372,9 @@
     let d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
     if (e.deltaMode === 1) d *= 30;               // some mice report lines, not pixels
     else if (e.deltaMode === 2) d *= innerHeight;
-    const now = performance.now();
-    if (now - wheelLastEvent > 200) wheelSum = 0; // a fresh scroll starts counting again
-    wheelLastEvent = now;
-    wheelSum += d;
-    if (Math.abs(wheelSum) >= WHEEL_STEP && now - wheelLastStep > WHEEL_COOLDOWN) {
-      const dir = Math.sign(wheelSum);            // scroll down / right → next card
-      wheelSum = 0;
-      wheelLastStep = now;
-      velocity = 0;
-      target = Math.round(target / STEP) * STEP - dir * STEP;
-      lastInteraction = now;
-    }
+    // scroll down / right → spins the same way as the › button
+    velocity = Math.max(-WHEEL_MAX, Math.min(WHEEL_MAX, velocity - d * WHEEL_SPEED));
+    lastInteraction = performance.now();
   }, { passive: false });
 
   // ---- deep links: archive.html#project-02 opens that card -----------------
