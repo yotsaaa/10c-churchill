@@ -625,15 +625,16 @@ html.is-idle .ring-close {
 }
 
 /* briar, running along the bottom of the page behind the cards (scripts/walker.js).
-   --walker-h is how tall her box is — make it bigger or smaller here */
+   --walker-h sets how big she is — make it bigger or smaller here. her box is 1.5x that,
+   so there's room above her for the pillory to fly up when she dies */
 .walker {
   --walker-h: 150px;
   position: fixed;
   left: 0;
   /* her box has a little empty space under her feet — pull it down so she runs right on the bottom edge */
   bottom: calc(var(--walker-h) * -0.133);
-  width: var(--walker-h);
-  height: var(--walker-h);
+  width: calc(var(--walker-h) * 1.5);
+  height: calc(var(--walker-h) * 1.5);
   z-index: 0;
   pointer-events: none;
   opacity: 0;
@@ -657,10 +658,10 @@ html.is-idle .ring-close {
 .walker { z-index: 2; }
 .walker-hit {
   position: absolute;
-  left: 30%;
-  width: 40%;
-  top: 18%;
-  height: 80%;
+  left: calc(50% - var(--walker-h) * 0.2);
+  width: calc(var(--walker-h) * 0.4);
+  bottom: calc(var(--walker-h) * 0.02);
+  height: calc(var(--walker-h) * 0.8);
   padding: 0;
   border: 0;
   background: transparent;

@@ -6,8 +6,8 @@
  * down for a moment, blinks out, drops back in with her respawn animation and runs on.
  * model: models/briar-web.glb — a small web copy of models/briar-2.glb ("Run_Base") with
  * "Dance" (models/briar dance.glb), "Death" (models/briar death.glb) and "Respawn"
- * (models/briar respawn.glb) added in. the death & respawn are pinned in place, and the
- * death is cut just before she drops through the floor.
+ * (models/briar respawn.glb) added in. the death & respawn are pinned in place; the death
+ * ends with her exploded and only her pillory left on the ground.
  * size: change --walker-h on .walker in css/ring.css. speed etc: the numbers below.
  */
 
@@ -40,7 +40,9 @@
   const SIDE = { '1': '-90deg 82deg 4m', '-1': '90deg 82deg 4m', front: '0deg 82deg 4m' };
   // where the camera points (height of her middle) — a touch lower while dancing so her feet
   // stay on the bottom edge
-  const TARGET = { run: '0m 0.78m 0m', dance: '0m 0.67m 0m' };
+  // (and a touch lower while she dies, so the pillory lying on the ground isn't cut off by the bottom edge)
+  const TARGET = { run: '0m 1.26m 0m', dance: '0m 1.15m 0m', death: '0m 1.1m 0m' };
+  const BOX = 1.5;              // her box is this many times her size (see .walker in css/ring.css)
 
   let x = -9999, dir = 1, last = null, turnUntil = 0;
   let dancing = false, danceTimer = null, danceStart = 0, danceLastT = 0;
@@ -58,15 +60,17 @@
   function frame(now) {
     const dt = last === null ? 0 : Math.min(0.05, (now - last) / 1000);
     last = now;
-    const { width, height } = walker.getBoundingClientRect();
-    const maxX = window.innerWidth - width;
+    const { width } = walker.getBoundingClientRect();
+    const size = width / BOX;                   // how big she is
+    // she runs until her middle is a little past each edge, then turns round
+    const minX = -width / 2 - size * 0.1;
+    const maxX = window.innerWidth - width / 2 + size * 0.1;
 
-    if (x === -9999) x = -width * 0.6;        // start just off the left edge
+    if (x === -9999) x = minX;                  // start just off the left edge
     if (!loaderUp() && !dancing && !dead && now > turnUntil) {
-      x += dir * SPEED * height * dt;
-      // run a little past each edge, then turn round
-      if (dir > 0 && x > maxX + width * 0.6) { x = maxX + width * 0.6; face(-1); turnUntil = now + TURN_MS; }
-      if (dir < 0 && x < -width * 0.6)        { x = -width * 0.6;       face(1);  turnUntil = now + TURN_MS; }
+      x += dir * SPEED * size * dt;
+      if (dir > 0 && x > maxX) { x = maxX; face(-1); turnUntil = now + TURN_MS; }
+      if (dir < 0 && x < minX) { x = minX; face(1);  turnUntil = now + TURN_MS; }
     }
     // the dance is over once its clock reaches the end (or jumps back to the start to loop)
     if (dancing && now - danceStart > 1000) {
@@ -113,10 +117,9 @@
     stopDancing();
     dead = 'dying';
     walker.classList.add('dead');
-    // side view, right where she's standing
-    mv.setAttribute('camera-orbit', SIDE[String(dir)]);
-    mv.setAttribute('camera-target', TARGET.run);
-    if (mv.jumpCameraToGoal) mv.jumpCameraToGoal();
+    // right where she's standing, turned to face you (like the dance)
+    mv.setAttribute('camera-orbit', SIDE.front);
+    mv.setAttribute('camera-target', TARGET.death);
     playOnce(DEATH);
     deathTimer = setTimeout(getUp, DEATH_MAX_MS);   // backup
   }
@@ -150,6 +153,9 @@
     } else if (dead === 'blink' && now - phaseStart > BLINK_MS) {
       // invisible now — start the respawn and fade back in as she drops into place
       dead = 'up';
+      mv.setAttribute('camera-orbit', SIDE[String(dir)]);   // back to side-on for the respawn & run
+      mv.setAttribute('camera-target', TARGET.run);
+      if (mv.jumpCameraToGoal) mv.jumpCameraToGoal();
       playOnce(RESPAWN);
       walker.classList.remove('blink');
     } else if (dead === 'up' && reachedEnd(now)) {
@@ -173,6 +179,8 @@
     clearTimeout(deathTimer);
     dead = false;
     walker.classList.remove('dead', 'blink');
+    mv.setAttribute('camera-orbit', SIDE[String(dir)]);
+    mv.setAttribute('camera-target', TARGET.run);
     mv.animationName = RUN;
     mv.play();
     turnUntil = performance.now() + TURN_MS;
