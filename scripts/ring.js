@@ -253,8 +253,12 @@
   function loadModel(card) {
     const slot = card.querySelector('.card-model');
     if (!slot || slot.querySelector('model-viewer')) return;
+    // one model (data-model), or several to flip between with ‹ › arrows
+    // (data-models, separated by |, with optional data-model-labels)
+    const models = (card.dataset.models || card.dataset.model).split('|').map((s) => s.trim()).filter(Boolean);
+    const labels = (card.dataset.modelLabels || '').split('|').map((s) => s.trim());
     const mv = document.createElement('model-viewer');
-    mv.setAttribute('src', card.dataset.model);
+    mv.setAttribute('src', models[0]);
     mv.setAttribute('alt', card.dataset.modelAlt || '3d model');
     mv.setAttribute('poster', card.querySelector('.card-media img')?.getAttribute('src') || '');
     mv.setAttribute('camera-controls', '');
@@ -262,6 +266,32 @@
     mv.setAttribute('shadow-intensity', '1');
     mv.setAttribute('ar', '');
     slot.appendChild(mv);
+    if (models.length < 2) return;
+
+    let current = 0;
+    slot.classList.add('multi');
+    const arrow = (cls, text, label, step) => {
+      const b = document.createElement('button');
+      b.className = 'model-arrow ' + cls;
+      b.type = 'button';
+      b.textContent = text;
+      b.setAttribute('aria-label', label);
+      b.setAttribute('data-no-glitch', '');
+      b.addEventListener('click', (e) => { e.stopPropagation(); show(current + step); });
+      slot.appendChild(b);
+    };
+    const count = document.createElement('div');
+    count.className = 'model-count';
+    count.setAttribute('data-no-glitch', '');
+    function show(k) {
+      current = (k + models.length) % models.length;
+      mv.setAttribute('src', models[current]);
+      count.textContent = (labels[current] || 'model ' + (current + 1)) + ' · ' + (current + 1) + ' / ' + models.length;
+    }
+    arrow('prev', '‹', 'previous model', -1);
+    arrow('next', '›', 'next model', 1);
+    slot.appendChild(count);
+    show(0);
   }
 
   // ---- pointer: drag to spin, click to open --------------------------------
