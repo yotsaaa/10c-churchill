@@ -673,8 +673,8 @@ html.is-idle .ring-close {
 .ring-stage.is-focused ~ .walker { z-index: 0; }
 .ring-stage.is-focused ~ .walker.ready { opacity: 0.25; }
 .ring-stage.is-focused ~ .walker .walker-hit { pointer-events: none; }
-/* after her death animation she fades away for a moment, then runs back in */
-.walker.ready.gone,
-.ring-stage.is-focused ~ .walker.ready.gone { opacity: 0; }
+/* no clicking her while she's down; she blinks out for a moment before respawning */
+.walker.ready.blink,
+.ring-stage.is-focused ~ .walker.ready.blink { opacity: 0; transition-duration: 0.35s; }
 .walker.dead .walker-hit { pointer-events: none; cursor: default; }
 @media (max-width: 640px) { .walker { --walker-h: 110px; } }
