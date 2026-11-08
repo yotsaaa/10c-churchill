@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * briar runs back and forth along the bottom of the page.
  * click her: she stops, turns to face you and dances the whole dance, then runs on.
  * click her 5 times quickly: she plays her death animation right where she is, stays

@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * sound toggle (bottom right). starts muted; once switched on it stays on
  * across pages and picks the song back up where it left off.
  */

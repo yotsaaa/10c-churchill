@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * project 03 teaser: a fake "video" screen of flickering static + a running
  * timecode, until the real video project is ready. delete this file (and its
  * <script> tag) once project 03 has its actual video.

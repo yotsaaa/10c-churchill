@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * gallery cards (additional work, in-class demos): once a card is open, click a thumbnail to show it
  * big. works with images (data-type="image") and videos (data-type="video").
  */

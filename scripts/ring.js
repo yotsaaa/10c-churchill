@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * page 2 // 3d project ring
  * drag (or ← →) to spin · cursor tilts the ring · click a card to open it
  */

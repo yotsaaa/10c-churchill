@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * ascii load-in animation engine
  * aesthetic: gothic-pastoral / net-art / early-web terminal
  */

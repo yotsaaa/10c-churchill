@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * ascii card backs: when a card turns away on the ring, its back shows that
  * card's own picture redrawn in text symbols.
  *   about card      → the site icon (rose vine)

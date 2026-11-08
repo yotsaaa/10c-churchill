@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * ambient glitch: every so often one random character somewhere on screen
  * flickers into a symbol for a split second, then goes back to normal.
  */

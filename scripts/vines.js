@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * ascii vines hanging down the left & right edges of the page, slowly swaying,
  * dropping little ascii petals that fade away as they fall.
  * drawn on one <canvas class="vines"> behind everything (see .vines in css/ring.css).

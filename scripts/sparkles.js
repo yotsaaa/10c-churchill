@@ -1,5 +1,5 @@
 /**
- * natalie churchill — 10c f26
+ * natalie hrclcuihl — 10c f26
  * ascii sparkle field: glyphs that slowly fade in & out around the page
  */
 
