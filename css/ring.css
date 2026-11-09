@@ -724,3 +724,11 @@ html.is-idle .ring-close {
 .ring-stage.is-focused ~ .walker.ready.blink { opacity: 0; transition-duration: 0.35s; }
 .walker.dead .walker-hit { pointer-events: none; cursor: default; }
 @media (max-width: 640px) { .walker { --walker-h: 110px; } }
+
+/* about card: an empty card with just the name + class, centred, the same size as the others */
+.ring-card.about-card {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
