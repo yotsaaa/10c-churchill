@@ -63,8 +63,9 @@
   }
   ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach((t) =>
     window.addEventListener(t, onActivity, { passive: true, capture: true }));
-  const watchingVideo = () => Array.from(document.querySelectorAll('video'))
-    .some((v) => !v.paused && !v.muted && !v.ended);
+  const watchingVideo = () => document.documentElement.dataset.ytLoud === '1' ||   // project 03 youtube (teaser.js)
+    Array.from(document.querySelectorAll('video'))
+      .some((v) => !v.paused && !v.muted && !v.ended);
   const FLIP_EASE = 0.07;        // how fast the cards turn round
   let fadeMix = 0;
 

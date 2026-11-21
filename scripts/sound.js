@@ -74,8 +74,9 @@
   // ---- pause the music while a video plays with sound -----------------------
   // (silent looping previews, like project 03's floating card, don't count)
   let pausedForVideo = false;
-  const loudVideoPlaying = () => Array.from(document.querySelectorAll('video'))
-    .some((v) => !v.paused && !v.ended && !v.muted && v.volume > 0);
+  const loudVideoPlaying = () => document.documentElement.dataset.ytLoud === '1' ||   // project 03 youtube (teaser.js)
+    Array.from(document.querySelectorAll('video'))
+      .some((v) => !v.paused && !v.ended && !v.muted && v.volume > 0);
 
   function checkVideos() {
     if (!on) return;
@@ -94,6 +95,7 @@
     document.addEventListener(type, (e) => {
       if (e.target instanceof HTMLVideoElement) setTimeout(checkVideos, 0);
     }, true));
+  document.addEventListener('ytloudchange', () => setTimeout(checkVideos, 0));
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();

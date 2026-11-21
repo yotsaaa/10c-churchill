@@ -1,8 +1,8 @@
 /**
  * natalie hrclcuihl — 10c f26
- * project 03 teaser: a fake "video" screen of flickering static + a running
- * timecode, until the real video project is ready. delete this file (and its
- * <script> tag) once project 03 has its actual video.
+ * project 03 video screen: the youtube player (silent loop until the card is
+ * opened), the tiny local clip that feeds its ascii card back, and the running
+ * timecode on the floating preview.
  */
 
 (function () {
@@ -50,18 +50,102 @@
     });
   }
 
-  // project 03 preview video: silent loop while floating; controls + sound once opened
+  // project 03's tiny local clip: always silent and looping, never clickable.
+  // it only feeds the ascii card back (and shows until youtube is ready)
   document.querySelectorAll('.tease-video').forEach((v) => {
-    const card = v.closest('.ring-card');
-    if (!card) return;
-    const sync = () => {
-      const open = card.classList.contains('focused');
-      v.controls = open;
-      if (!open) { v.muted = true; if (v.paused) v.play().catch(() => {}); }
-    };
-    new MutationObserver(sync).observe(card, { attributes: true, attributeFilter: ['class'] });
-    sync();
+    v.muted = true;
+    v.controls = false;
+    v.play().catch(() => {});
   });
+
+  // project 03 youtube player: silent loop while floating; sound (from the start) once opened.
+  // closing the card mutes it again and it keeps looping.
+  const ytBoxes = document.querySelectorAll('.yt-player[data-yt]');
+  if (ytBoxes.length) {
+    const prevReady = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      if (typeof prevReady === 'function') prevReady();
+      ytBoxes.forEach(setupYT);
+    };
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  }
+
+  // tells sound.js (background music) and ring.js (idle fade) when youtube is playing out loud
+  let ytLoud = false;
+  function setLoud(on) {
+    if (on === ytLoud) return;
+    ytLoud = on;
+    document.documentElement.dataset.ytLoud = on ? '1' : '';
+    document.dispatchEvent(new Event('ytloudchange'));
+  }
+
+  function setupYT(box) {
+    const id = box.dataset.yt;
+    const card = box.closest('.ring-card');
+    const screen = box.closest('.tease-screen');
+    const mount = document.createElement('div');
+    box.appendChild(mount);
+    let ready = false;
+
+    const player = new YT.Player(mount, {
+      videoId: id,
+      playerVars: {
+        autoplay: 1, mute: 1, loop: 1, playlist: id,   // playlist = same id is how youtube loops one video
+        controls: 1, playsinline: 1, rel: 0, modestbranding: 1, iv_load_policy: 3,
+        origin: location.origin
+      },
+      events: {
+        onReady: (e) => {
+          ready = true;
+          e.target.getIframe().setAttribute('title', 'project 03 video');
+          e.target.mute();
+          e.target.playVideo();
+          sync();
+        },
+        // youtube refused (offline, blocked, or the page was opened straight from a file):
+        // hide the player so the local clip shows instead
+        onError: () => { box.style.display = 'none'; ready = false; setLoud(false); },
+        onStateChange: (e) => {
+          if (e.data === YT.PlayerState.PLAYING) screen?.classList.add('yt-ready');
+          // closed card: never let it sit paused or finished
+          if (!isOpen() && (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED)) {
+            player.seekTo(0, true);
+            player.playVideo();
+          }
+          checkLoud();
+        }
+      }
+    });
+
+    const isOpen = () => card && card.classList.contains('focused');
+    let wasOpen = false;
+    function sync() {
+      if (!ready) return;
+      const open = isOpen();
+      if (open && !wasOpen) {            // just opened → from the top, with sound
+        player.seekTo(0, true);
+        player.unMute();
+        player.setVolume(100);
+        player.playVideo();
+      } else if (!open && wasOpen) {     // just closed → back to a silent loop
+        player.mute();
+        player.playVideo();
+      }
+      wasOpen = open;
+      checkLoud();
+    }
+    function checkLoud() {
+      if (!ready) return;
+      const playing = player.getPlayerState() === YT.PlayerState.PLAYING;
+      setLoud(isOpen() && playing && !player.isMuted());
+    }
+
+    if (card) new MutationObserver(sync).observe(card, { attributes: true, attributeFilter: ['class'] });
+    // youtube's own mute button doesn't send an event, so check now and then
+    setInterval(checkLoud, 700);
+  }
 
   if (reduceMotion) {
     screens.forEach((s) => fill(s.querySelector('.tease-noise')));

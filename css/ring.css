@@ -732,3 +732,22 @@ html.is-idle .ring-close {
   flex-direction: column;
   justify-content: center;
 }
+
+/* --- project 03: youtube player on top of the tiny local clip ------------
+   the local clip (.tease-video) shows until youtube starts playing, and is what
+   the ascii card back is drawn from. scripts/teaser.js builds the player. */
+.tease-screen .yt-player,
+.tease-screen .yt-player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.tease-screen .yt-player { z-index: 1; opacity: 0; transition: opacity 0.4s ease; }
+.tease-screen.yt-ready .yt-player { opacity: 1; }
+.ring-card:not(.focused) .tease-screen .yt-player { pointer-events: none; }  /* closed: clicks go to the card */
+.tease-screen.has-video::after,
+.tease-screen .tease-top,
+.tease-screen .tease-center,
+.tease-screen .tease-bottom { z-index: 2; }
